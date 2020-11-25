@@ -1,5 +1,6 @@
 import React from 'react'
 import { Text, TouchableOpacity, StyleSheet } from 'react-native'
+import bStyle from '../../utils/buttonCustomVariables'
 
 const SocialButtons = (props) => {
         return(
@@ -11,16 +12,16 @@ const SocialButtons = (props) => {
 
 const styles = StyleSheet.create({
     buttonBody: {
-        backgroundColor: '#00aeef',
+        backgroundColor: bStyle.socialButtonStyle,
         marginTop: 50,
-        width: 300,
+        width: bStyle.socialButtonWidth,
         padding: 10,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 8
+        borderRadius: bStyle.borderRadius
     },
     buttonText: {
-        color: 'white',
+        color: bStyle.color,
         fontSize: 18,
         fontWeight: '600'
     }
