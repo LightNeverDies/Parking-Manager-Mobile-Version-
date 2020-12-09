@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text, TouchableOpacity, StyleSheet } from 'react-native'
-import bStyle from '../../utils/buttonCustomVariables'
+import bStyle from '@src/utils/buttonCustomVariables'
 
 const SocialButtons = (props) => {
         return(
@@ -13,7 +13,7 @@ const SocialButtons = (props) => {
 const styles = StyleSheet.create({
     buttonBody: {
         backgroundColor: bStyle.socialButtonStyle,
-        marginTop: 50,
+        marginTop: 40,
         width: bStyle.socialButtonWidth,
         padding: 10,
         alignItems: 'center',

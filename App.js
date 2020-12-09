@@ -1,11 +1,14 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import LoginScreen from "./src/pages/Login/LoginScreen";
+import { NavigationContainer } from '@react-navigation/native';
+import RootStack from '@src/router/Router'
 
 export default function App() {
   return (
     <View style={styles.container}>
-    	<LoginScreen />
+      <NavigationContainer>
+    	  <RootStack/>
+      </NavigationContainer>
     </View>
   )
 }

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ParkingManager-Mobile-Version",
+    "name": "ParkingManager MobileVersion",
     "slug": "ParkingManager-Mobile-Version",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -20,6 +20,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package":"com.parking_manager.Parking_Client",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
