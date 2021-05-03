@@ -24,7 +24,8 @@ module.exports = function(api) {
             '@src/components': './src/components',
             '@src/utils': './src/utils',
             '@src/router': './src/router',
-            '@src/config': './src/config'
+            '@src/config': './src/config',
+            '@src/reduxStore': './src/reduxStore'
           },
         },
       ],

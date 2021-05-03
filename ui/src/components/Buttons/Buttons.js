@@ -4,7 +4,7 @@ import bStyle from '@src/utils/buttonCustomVariables'
 
 const Buttons = (props) => {
         return(
-            <TouchableOpacity onPress= {props.onPress} style={styles.buttonBody}>
+            <TouchableOpacity onPress= {props.onPress} style={[styles.buttonBody, props.styles]}>
                 <Text style={styles.buttonText}>{props.children}</Text>
             </TouchableOpacity>
         )
@@ -13,7 +13,6 @@ const Buttons = (props) => {
 const styles = StyleSheet.create({
     buttonBody: {
         backgroundColor: bStyle.buttonStyle,
-        marginTop: 20,
         width: bStyle.normalButtonWidth,
         padding: 10,
         alignItems: 'center',

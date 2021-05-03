@@ -1,30 +1,27 @@
 import React from "react"
-import { Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native'
 import bStyle from '@src/utils/buttonCustomVariables'
 
 const MenuButtons = (props) => {
     return(
-        <TouchableOpacity onPress= {props.onPress} style={styles.buttonBody}>
-            <Text style={styles.buttonText}>{props.children}</Text>
+        <TouchableOpacity onPress= {props.onPress} style={props.styles}>
+            <ImageBackground source = {props.source} style={[styles.imageBackground, props.styles]}>
+                <Text style={styles.buttonText}>{props.children}</Text>
+            </ImageBackground>
         </TouchableOpacity>
     )
 }
 
 
 const styles = StyleSheet.create({
-    buttonBody: {
-        backgroundColor: bStyle.buttonStyle,
-        width: bStyle.menuButtonWidth,
-        height: bStyle.menuButtonHeight,
-        margin: 30,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: bStyle.borderRadius
-    },
     buttonText: {
         color: bStyle.color,
         fontSize: 18,
-        fontWeight: '600'
+        margin: 35
+    },
+    imageBackground: {
+        alignItems: 'center',
+        justifyContent: 'center',
     }
 })
 

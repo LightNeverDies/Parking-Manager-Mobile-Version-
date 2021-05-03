@@ -1,6 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import CarLoader from '@src/components/CarLoader/CarLoader'
+import { StyleSheet, Dimensions, View } from 'react-native'
+// import CarLoader from '@src/components/CarLoader/CarLoader'
 import LogoHolder from '@src/components/LogoHolder/LogoHolder'
 import MenuButtons from '@src/components/MenuButtons/MenuButtons'
 
@@ -10,16 +10,19 @@ class Main extends React.Component {
     }
 
     renderMainScreen = () => {
+        const { navigate } = this.props.navigation
         return(
             <View style={styles.loginContainer} >
                 <LogoHolder source={require('../../../assets/favicon.png')}/>
-                <View style={styles.row}>
-                    <MenuButtons>Account</MenuButtons>
-                    <MenuButtons>Parking</MenuButtons>
-                </View>
-                <View style={styles.row}>
-                    <MenuButtons>Payment</MenuButtons>
-                    <MenuButtons>Statistics</MenuButtons>
+                <View style={styles.menuContainer}>
+                    <View style={styles.rowLeft}>
+                        <MenuButtons onPress= { () => navigate('Account')} styles = {styles.menuButtonsLeft} source={require('../../../assets/CardDesign/CardDesign-Account.png')}>Account</MenuButtons>
+                        <MenuButtons onPress= { () => navigate('Parking')} styles = {styles.menuButtonsRight} source={require('../../../assets/CardDesign/CardDesign-Parking.png')}>Parking</MenuButtons>
+                    </View>
+                    <View style={styles.rowRight}>
+                        <MenuButtons onPress= { () => navigate('Payment')} styles = {styles.menuButtonsLeft} source={require('../../../assets/CardDesign/CardDesign-Payment.png')}>Payment</MenuButtons>
+                        <MenuButtons onPress= { () => navigate('Statistic')} styles = {styles.menuButtonsRight} source={require('../../../assets/CardDesign/CardDesign-Statistics.png')}>Statistic</MenuButtons>
+                    </View>
                 </View>
             </View>
         )
@@ -29,7 +32,6 @@ class Main extends React.Component {
         return(
             <>
             { this.renderMainScreen() }
-              <CarLoader/>
             </>
         )
     }
@@ -40,11 +42,33 @@ const styles = StyleSheet.create({
         flex:1,
         alignItems: 'center',
         flexDirection: 'column',
-        justifyContent: 'space-between'
+        justifyContent: 'center'
     },
-    row:{
-        flexDirection: 'row',
-        margin: 10
+    menuButtonsLeft: {
+        width: 200,
+        height: 80,
+        margin: 10,
+        justifyContent: 'center',
+        alignItems: 'flex-start'
+    },
+    menuButtonsRight: {
+        width: 200,
+        height: 80,
+        margin: 10,
+        marginTop: 70,
+        marginLeft: 30,
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+    },
+    rowLeft: {
+        flexDirection: 'row'
+    },
+    rowRight: {
+        flexDirection: 'row'
+    },
+    menuContainer: {
+        flex: 2,
+        justifyContent: 'center',
     }
 })
 
