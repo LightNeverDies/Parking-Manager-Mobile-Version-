@@ -1,14 +1,26 @@
-import { StyleSheet, View, TextInput, Button } from 'react-native'
+import { StyleSheet, View, TextInput } from 'react-native'
 import React from 'react'
 import SocialButton from '@src/components/SocialButtons/SocialButtons'
 import LogoHolder from '@src/components/LogoHolder/LogoHolder'
 import ButtonComp from '@src/components/Buttons/Buttons'
+import { Reset } from '@src/reduxStore/register/actions/Reset'
+import { connect } from 'react-redux'
 
 class LoginScreen extends React.Component {
     constructor(){
         super()
     }
 
+    onRegister = () => {
+        const { navigate } = this.props.navigation
+        this.props.Reset()
+        navigate('Register')
+    }
+
+    onMenu = () => {
+        const { navigate } = this.props.navigation
+        navigate('Menu')
+    }
     renderLoginScreen = () => {
         const { navigate } = this.props.navigation
         return (
@@ -18,8 +30,8 @@ class LoginScreen extends React.Component {
                     <TextInput style={styles.inputField} placeholder={"Email"} keyboardType="email-address" onChangeText={value => this.setState({ email: value })}/>
                     <TextInput style={styles.inputField} placeholder={"Password"} secureTextEntry={true} onChangeText={value => this.setState({ password: value })}/>
                     <View style={styles.containerButton}>
-                        <ButtonComp onPress={ () => navigate('Menu')}>Sign in</ButtonComp>
-                        <ButtonComp styles={{ backgroundColor: '#00a2de' }} onPress={ () => navigate('Register')}>Sign up</ButtonComp>
+                        <ButtonComp onPress={ this.onMenu }>Sign in</ButtonComp>
+                        <ButtonComp styles={{ backgroundColor: '#00a2de' }} onPress={ this.onRegister }>Sign up</ButtonComp>
                     </View>
                     <View style={styles.containerSocial}>
                         <SocialButton>Login with Facebook</SocialButton>
@@ -71,4 +83,8 @@ const styles = StyleSheet.create({
     }
 })
 
-module.exports = LoginScreen
+const mapDispatchToProps = dispatch => ({ 
+    Reset: () => dispatch(Reset())
+})
+
+export default connect(null, mapDispatchToProps)(LoginScreen)

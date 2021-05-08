@@ -1,8 +1,9 @@
 import React from 'react'
-import { StyleSheet, Dimensions, View } from 'react-native'
+import { StyleSheet, View, Text } from 'react-native'
 // import CarLoader from '@src/components/CarLoader/CarLoader'
 import LogoHolder from '@src/components/LogoHolder/LogoHolder'
 import MenuButtons from '@src/components/MenuButtons/MenuButtons'
+import { connect } from 'react-redux'
 
 class Main extends React.Component {
     constructor(){
@@ -13,6 +14,7 @@ class Main extends React.Component {
         const { navigate } = this.props.navigation
         return(
             <View style={styles.loginContainer} >
+                <Text>{this.props.user}</Text>
                 <LogoHolder source={require('../../../assets/favicon.png')}/>
                 <View style={styles.menuContainer}>
                     <View style={styles.rowLeft}>
@@ -21,7 +23,7 @@ class Main extends React.Component {
                     </View>
                     <View style={styles.rowRight}>
                         <MenuButtons onPress= { () => navigate('Payment')} styles = {styles.menuButtonsLeft} source={require('../../../assets/CardDesign/CardDesign-Payment.png')}>Payment</MenuButtons>
-                        <MenuButtons onPress= { () => navigate('Statistic')} styles = {styles.menuButtonsRight} source={require('../../../assets/CardDesign/CardDesign-Statistics.png')}>Statistic</MenuButtons>
+                        <MenuButtons onPress= { () => navigate('Statistic')} styles = {styles.menuButtonsRight} source={require('../../../assets/CardDesign/CardDesign-Statistics.png')}>Statistics</MenuButtons>
                     </View>
                 </View>
             </View>
@@ -72,4 +74,10 @@ const styles = StyleSheet.create({
     }
 })
 
-module.exports = Main
+const mapStateToProps = (state) => {
+    return {
+        user: state.register.username
+    }
+}
+
+export default connect(mapStateToProps, null)(Main)

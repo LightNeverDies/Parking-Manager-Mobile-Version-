@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: bStyle.color,
         fontSize: 18,
-        margin: 35
+        margin: 35,
     },
     imageBackground: {
         alignItems: 'center',

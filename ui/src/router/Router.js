@@ -15,7 +15,7 @@ const RootStack = createStackNavigator()
 root = () => {
     return (
       <RootStack.Navigator initialRouteName="Login">
-            <RootStack.Screen name="Register" component={RegisterScreen} options={{ headerTitleAlign: 'center' }}/>
+            <RootStack.Screen name="Register" component={RegisterScreen} options={{ headerTitleAlign: 'center' } }/>
             <RootStack.Screen name="Login" component={LoginScreen} options={{ headerTitleAlign: 'center' }}/>
             <RootStack.Screen name="Menu" component={MenuScreen}/>
             <RootStack.Screen name="Account" component={Account}/>

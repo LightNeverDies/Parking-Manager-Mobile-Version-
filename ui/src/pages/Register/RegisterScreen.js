@@ -4,10 +4,12 @@ import ButtonComp from '@src/components/Buttons/Buttons'
 import LogoHolder from '@src/components/LogoHolder/LogoHolder'
 import forbiddenWords from '@src/config/ForbiddenNames.json'
 import { HelperText } from 'react-native-paper'
+import { addUser } from '@src/reduxStore/register/actions/addUser'
+import { connect } from 'react-redux'
 
-class LoginScreen extends React.Component {
-    constructor(){
-        super()
+class RegisterScreen extends React.Component {
+    constructor(props){
+        super(props)
         this.state = {
             email: '',
             password: '',
@@ -33,8 +35,6 @@ class LoginScreen extends React.Component {
                 this.setState({ email: email })
                 this.state.errorStatusEmail = true
             }
-            
-            return true
         } else {
             this.state.errorStatusEmail = false
             this.setState({ errorMessageEmail: 'Error: Input field cannot be empty.' })
@@ -63,7 +63,7 @@ class LoginScreen extends React.Component {
 
     usernameValidation = (username) => {
         if(username.length != '' && username.length > 2) {
-            if(forbiddenWords.reservedwords.includes(username)) {
+            if(forbiddenWords.reservedwords.includes(username.toLowerCase())) {
                 this.state.errorStatusUsername = false
                 this.setState({ errorMessageUsername: 'Error: This username is forbidden' })
             } else {
@@ -77,46 +77,52 @@ class LoginScreen extends React.Component {
             return false
         }
     }
-
-    onNext = () => {
+    
+    onNext = async() => {
         const { email, password } = this.state
-        // email => asadasda@abv.bg
-        // password -> daddasdasdsa
-        // next
-        // user -> georgi
-        // next -> Menu
-        if(this.emailValidation(email) === true && this.passwordValidation(password) === true) {
-
-            this.setState((prevState) => ({status: !prevState.status}))
-            // Firebase.auth()
-            //     .createUserWithEmailAndPassword(email, password)
-            //     .then(this.setState((prevState) => ({status: !prevState.status})))
-            //     .catch(error => this.setState({ errorMessageEmail: `${error}` }), this.state.errorStatusEmail = false)
+        if(this.emailValidation(email) == true || this.passwordValidation(password) == true) {
+            await this.setState((prevState) => ({status: !prevState.status}))
         }
     }
 
-    onMenu = () => {
-        const { username } = this.state
+    onLogin = async() => {
         const { navigate } = this.props.navigation
-        if(this.usernameValidation(username) === true){
-            navigate('Menu')
+        navigate('Login')
+    }
+    
+    AddUser = async () => {
+        const { navigate } = this.props.navigation
+        if(this.props.status == '0') {
+            await this.setState({ errorStatusEmail: true })
+            navigate('Login')
+        } else {
+            await this.setState({ errorStatusEmail: false })
+        }
+    }
+
+    onMenu = async() => {
+        const { username, email, password } = this.state
+        if(this.usernameValidation(username) == true){
+            await this.props.addUser(username, password, email)
+            await this.AddUser()
         }
     }
 
     renderNextScreen = () =>{
         return (
-        <View style={styles.loginContainer}>
-                <LogoHolder style={styles.imageContainer} source={require('../../../assets/favicon.png')}/>
-            <View style= {styles.container}>
-                <View style = {styles.inputForm}>
-                    <TextInput style={styles.inputField} placeholder={"Username"} onChangeText={(username) => this.usernameValidation(username)}/>
-                    <HelperText type="error" style={styles.errorMessage} visible = {!this.state.errorStatusUsername}>{this.state.errorMessageUsername}</HelperText>
+        <View style={ styles.loginContainer }>
+                <LogoHolder style={ styles.imageContainer } source={ require('../../../assets/favicon.png') }/>
+            <View style= { styles.container }>
+                <View style = { styles.inputForm }>
+                    <TextInput style={ styles.inputField } placeholder={"Username"} onChangeText={(username) => this.usernameValidation(username)}/>
+                    <HelperText type="error" style={ styles.errorMessage } visible = { !this.state.errorStatusUsername }>{ this.state.errorMessageUsername }</HelperText>
                 </View>
                 <View style={{ marginBottom: 20 }}>
-                    <ButtonComp onPress={this.onMenu}>Sign in</ButtonComp>
+                <HelperText type="error" style={ styles.errorMessage } visible = { !this.state.errorStatusEmail }>{ this.props.error }</HelperText>
+                    <ButtonComp onPress={ this.onMenu }>Sign in</ButtonComp>
                 </View>
                 <View>
-                    <ButtonComp onPress={this.onNext}>Back</ButtonComp>
+                    <ButtonComp onPress={ this.onLogin }>Go To Login</ButtonComp>
                 </View>
             </View>
         </View>
@@ -159,13 +165,13 @@ const styles = StyleSheet.create({
         flex:1,
         alignItems: 'center',
         flexDirection: 'column',
-        marginBottom: 70
+        marginBottom: 70,
     },
     inputField: {
         borderRadius: 3,
         borderWidth: 0.2,
         width: "80%",
-        padding: 15
+        padding: 15,
     },
     container: {
         flex:1,
@@ -184,4 +190,18 @@ const styles = StyleSheet.create({
     }
 })
 
-module.exports = LoginScreen
+const mapStateToProps = (state) => {
+    return {
+        loading: state.register.loading,
+        username: state.register.username,
+        email: state.register.email,
+        error: state.register.error,
+        status: state.register.status
+    }
+}
+
+const mapDispatchToProps = dispatch => ({ 
+    addUser: (username, password, email) => dispatch(addUser(username, password, email)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(RegisterScreen)
