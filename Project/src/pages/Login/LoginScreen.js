@@ -1,11 +1,13 @@
-import { StyleSheet, View, TextInput, Dimensions, Text } from 'react-native'
+import { StyleSheet, View, TextInput, Dimensions } from 'react-native'
 import React from 'react'
 import SocialButton from '@src/components/SocialButtons/SocialButtons'
 import LogoHolder from '@src/components/LogoHolder/LogoHolder'
 import ButtonComp from '@src/components/Buttons/Buttons'
 import NetInfo from '@react-native-community/netinfo'
 import CarLoader from '@src/components/CarLoader/CarLoader'
-import { Reset } from '@src/reduxStore/register/actions/Reset'
+import { HelperText } from 'react-native-paper'
+import { userFind } from '@src/reduxStore/login/actions/findUser'
+import { Reset } from '../../reduxStore/register/actions/Reset'
 import { connect } from 'react-redux'
 
 class LoginScreen extends React.Component {
@@ -15,7 +17,10 @@ class LoginScreen extends React.Component {
     constructor(){
         super()
         this.state = {
-            connection_status: false
+            connection_status: false,
+            email: '',
+            password: '',
+            errorStatusLogged: true
         }
     }
 
@@ -42,10 +47,19 @@ class LoginScreen extends React.Component {
         }
     }
 
-    onMenu = () => {
+    onMenu = async() => {
+        const { email, password } = this.state
+        const { navigate } = this.props.navigation
         if(this.state.connection_status) {
-            const { navigate } = this.props.navigation
-            navigate('Menu')
+            if(email != '' && password != '') {
+                await this.props.userFind(email, password)
+                if(this.props.logged == true) {
+                    this.setState({ errorStatusLogged: true })
+                    navigate('Menu')
+                } else {
+                    this.setState({ errorStatusLogged: false })
+                }
+            }
         }
     }
     renderLoginScreen = () => {
@@ -56,6 +70,7 @@ class LoginScreen extends React.Component {
                 <View style= {styles.container}>
                     <TextInput style={styles.inputField} placeholderTextColor="white" placeholder={"Email"} keyboardType="email-address" onChangeText={value => this.setState({ email: value })}/>
                     <TextInput style={styles.inputField} placeholderTextColor="white" placeholder={"Password"} secureTextEntry={true} onChangeText={value => this.setState({ password: value })}/>
+                    <HelperText type="error" style={ styles.errorMessage } visible = { !this.state.errorStatusLogged }>{ this.props.error }</HelperText>
                     <View style={styles.containerButton}>
                         <ButtonComp onPress={ this.onMenu }>Sign in</ButtonComp>
                         <ButtonComp styles={{ backgroundColor: '#00a2de' }} onPress={ this.onRegister }>Sign up</ButtonComp>
@@ -81,7 +96,7 @@ const styles = StyleSheet.create({
     top: {
         width: Dimensions.get('window').width,
         height: 40,
-        backgroundColor: '#12285c'
+        backgroundColor: '#12285c',
     },
     loginContainer: {
         flex:2,
@@ -113,12 +128,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'column',
         width: "100%",
-        marginBottom: 70
+        marginBottom: 100
     },
 })
 
+const mapStateToProps = (state) => {
+    return {
+        loading: state.login.loading,
+        error: state.login.error,
+        logged: state.login.logged,
+        username: state.login.username
+    }
+}
+
 const mapDispatchToProps = dispatch => ({ 
+    userFind: (email, password) => dispatch(userFind(email, password)),
     Reset: () => dispatch(Reset())
 })
 
-export default connect(null, mapDispatchToProps)(LoginScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)

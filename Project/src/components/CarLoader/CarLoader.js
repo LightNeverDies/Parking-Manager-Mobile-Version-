@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     },
     car: {
         width: 55,
-        height: 30,
+        height: 25,
     },
     dashed: {
         width: Dimensions.get('screen').width,

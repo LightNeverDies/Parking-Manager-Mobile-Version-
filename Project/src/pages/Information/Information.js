@@ -20,8 +20,9 @@ class Information extends React.Component {
             return item
         })
         const count = data.map(c => {
-            return c.count 
+            return c.count
         })
+        console.log(count)
         const date = data.map(d => {
             return d.date
         })

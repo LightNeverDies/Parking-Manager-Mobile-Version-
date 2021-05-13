@@ -4,7 +4,7 @@ import ButtonComp from '@src/components/Buttons/Buttons'
 import LogoHolder from '@src/components/LogoHolder/LogoHolder'
 import forbiddenWords from '@src/config/ForbiddenNames.json'
 import { HelperText } from 'react-native-paper'
-import { addUser } from '@src/reduxStore/register/actions/addUser'
+import { addUser } from '../../reduxStore/register/actions/addUser'
 import { connect } from 'react-redux'
 
 class RegisterScreen extends React.Component {
@@ -204,6 +204,7 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state) => {
+    console.log(state.register)
     return {
         loading: state.register.loading,
         username: state.register.username,
