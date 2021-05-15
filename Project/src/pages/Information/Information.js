@@ -22,7 +22,7 @@ class Information extends React.Component {
         const count = data.map(c => {
             return c.count
         })
-        console.log(count)
+
         const date = data.map(d => {
             return d.date
         })

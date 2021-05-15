@@ -6,5 +6,7 @@ module.exports = {
     menuButtonWidth: 100,
     menuButtonHeight: 90,
     borderRadius: 8,
-    color: 'white'
+    color: 'white',
+    tabs: '50%',
+    tabsColor: '#12285c'
 }

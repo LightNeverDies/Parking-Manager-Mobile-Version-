@@ -9,6 +9,7 @@ import Parking from '../Parking/Parking'
 import Payment from '../Payment/Payment'
 
 import { MaterialCommunityIcons, MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { getUserProfile } from '@src/reduxStore/login/actions/findUser'
 import { connect } from 'react-redux'
 
 
@@ -18,6 +19,10 @@ class Main extends React.Component {
         this.state = {
             active: ''
         }
+    }
+
+    componentDidMount() {
+
     }
 
     renderMainContainer = (active) => {

@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, View, Text} from 'react-native'
+import { StyleSheet, View} from 'react-native'
+import Tabs from '../../components/Tabs/Tabs'
 // import { connect } from 'react-redux'
 
 
@@ -9,15 +10,19 @@ class Account extends React.Component {
 
     render() {
         return (
-            <View>
-                <Text>Account</Text>
-            </View>
+                <View style={styles.container}>
+                    <Tabs onPress={ this.onMenu }>Account Settings</Tabs>
+                    <Tabs onPress={ this.onRegister }>Account History</Tabs>
+                </View>
         )
     }
 
 }
 const styles = StyleSheet.create({
-        
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+    },
 })
 
 // const mapStateToProps = (state) => {    

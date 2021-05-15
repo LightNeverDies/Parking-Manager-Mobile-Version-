@@ -22,8 +22,4 @@ export const addUser = (username, password, email) => async (dispatch) => {
         }
     }))
     .catch((err) => err.message)
-    //     dispatch({
-    //     type: userRegister_Failed,
-    //     payload: { error: err.message }
-    // }))
 }

@@ -24,8 +24,7 @@ export const userFind = (email, password) => async (dispatch) => {
             })
             const token = result.token
             AsyncStorage.setItem("token", token)
-            const decoded = jwt_decode(token)
-            console.log(decoded)
+            // const decoded = jwt_decode(token)
             // dispatch(setCurrentUser(decoded, result.username))
         } else {
             dispatch({
@@ -44,7 +43,6 @@ export const getUserProfile = (username) => async(dispatch) => {
     await fetch(`http://192.168.1.5:3000/user/?username=${username}`)
     .then((response) => response.json()
     .then((result) => {
-        console.log(result)
         dispatch({
             type: setCurrentUser_Auth,
             payload: {
@@ -61,10 +59,10 @@ export const getLogout = async(dispatch) => {
     dispatch(setCurrentUser({}))
 }
 
-// export const setCurrentUser = (decoded, user) => {
-//     return {
-//         type: setCurrentUser_Auth,
-//         payload: decoded,
-//         userProfile: user
-//     }
-// }
+export const setCurrentUser = (decoded, user) => {
+    return {
+        type: setCurrentUser_Auth,
+        payload: decoded,
+        userProfile: user
+    }
+}

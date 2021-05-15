@@ -28,16 +28,16 @@ class LoginScreen extends React.Component {
         this.NetInfoSubscription = NetInfo.addEventListener(
             this.handleConnectivityChange
         )
+        this.test
     }
 
-    handleConnectivityChange = (state) => {
+    handleConnectivityChange = async(state) => {
         this.setState({ connection_status: state.isConnected })
     }
 
     componentWillUnmount() {
         this.NetInfoSubscription && this.NetInfoSubscription()
     }
-
 
     onRegister = () => {
         if(this.state.connection_status) {

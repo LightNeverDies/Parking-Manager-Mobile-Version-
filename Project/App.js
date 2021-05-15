@@ -3,22 +3,70 @@ import { StyleSheet, View} from "react-native";
 import { createStore, applyMiddleware } from 'redux'
 import { NavigationContainer } from '@react-navigation/native';
 import RootStack from '@src/router/Router'
+import AuthRootStack from '@src/router/AuthRouter'
 import thunk from 'redux-thunk'
 import { Provider } from "react-redux";
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistStore, persistReducer } from 'redux-persist'
 import combineReducer from '@src/reduxStore/combineReducer'
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
-const store = createStore(combineReducer,applyMiddleware(thunk))
+const persistConfig = {
+  key: 'root',
+  storage: AsyncStorage,
+}
 
-export default function App() {
-  return (
-    <Provider store={store}>
-      <View style={styles.container}>
-        <NavigationContainer>
-          <RootStack/>
-        </NavigationContainer>
-      </View>
-    </Provider>
-  )
+const persistedReducer = persistReducer(persistConfig, combineReducer);
+const store = createStore(persistedReducer, applyMiddleware(thunk))
+let persistor = persistStore(store);
+
+class App extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      value: ''
+    }
+  }
+
+
+  componentDidMount () {
+    this.authChecker()
+  }
+
+  authChecker = async() => {
+    const auth = await AsyncStorage.getItem('token')
+    this.setState({ value: auth })
+  }
+
+  checkUserHasToken = () => {
+      if(this.state.value != null) {
+        return ( 
+            <NavigationContainer>
+              <AuthRootStack/>
+            </NavigationContainer>
+        )
+      } else { 
+        return (
+          <>
+            <NavigationContainer>
+              <RootStack/>
+            </NavigationContainer>
+          </>
+        )
+      }
+  }
+
+  render () {
+    return (
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+        <View style={styles.container}>
+          {this.checkUserHasToken()}
+        </View>
+        </PersistGate>
+      </Provider>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
@@ -29,4 +77,5 @@ const styles = StyleSheet.create({
   },
 });
 
+export default App
 

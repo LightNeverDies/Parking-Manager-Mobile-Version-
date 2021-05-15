@@ -13,7 +13,6 @@ const loginRequest = async (req, res) => {
         } else {
             let email = req.body.email
             let password = req.body.password
-            console.log(email, password)
             con.query(`SELECT * FROM User WHERE email = '${email}'`, (err, row) => {
                 if(err) {
                     res.send(messageError.errorConnection)

@@ -204,7 +204,6 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state) => {
-    console.log(state.register)
     return {
         loading: state.register.loading,
         username: state.register.username,
