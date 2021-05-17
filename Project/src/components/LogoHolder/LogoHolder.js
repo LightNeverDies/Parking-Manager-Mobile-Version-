@@ -1,10 +1,12 @@
 import React from "react"
-import { StyleSheet, View, Image } from 'react-native'
+import { StyleSheet, View, Image, TouchableOpacity } from 'react-native'
 
 const LogoHolder = (props) => {
     return(
         <View style={styles.imageContainer}>
-            <Image source={props.source}/>
+            <TouchableOpacity onPress= {props.onPress}>
+                <Image source={props.source}/>
+            </TouchableOpacity>
         </View>
     )
 }

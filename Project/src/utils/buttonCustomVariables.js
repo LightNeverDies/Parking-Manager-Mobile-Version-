@@ -8,5 +8,5 @@ module.exports = {
     borderRadius: 8,
     color: 'white',
     tabs: '50%',
-    tabsColor: '#12285c'
+    tabsColor: 'red'
 }

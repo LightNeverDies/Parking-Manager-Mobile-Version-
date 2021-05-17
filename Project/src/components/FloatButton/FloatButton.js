@@ -1,28 +1,21 @@
 import React from 'react'
-import { Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { TouchableOpacity, StyleSheet } from 'react-native'
 import bStyle from '@src/utils/buttonCustomVariables'
 
-const Tabs = (props) => {
+const FloatButton = (props) => {
         return(
             <TouchableOpacity onPress= {props.onPress} style={[styles.buttonBody, props.styles]}>
-                <Text style={styles.buttonText}>{props.children}</Text>
+                    {props.children}
             </TouchableOpacity>
         )
 }
 
 const styles = StyleSheet.create({
     buttonBody: {
-        width: bStyle.tabs,
-        padding: 10,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    buttonText: {
-        color: bStyle.color,
-        fontSize: 18,
-        fontWeight: '600'
     }
 })
 
 
-module.exports = Tabs
+module.exports = FloatButton
