@@ -7,7 +7,7 @@ import NetInfo from '@react-native-community/netinfo'
 import CarLoader from '@src/components/CarLoader/CarLoader'
 import { HelperText } from 'react-native-paper'
 import { userFind } from '@src/reduxStore/login/actions/findUser'
-import { Reset } from '../../reduxStore/register/actions/Reset'
+import { Reset } from '@src/reduxStore/register/actions/Reset'
 import { connect } from 'react-redux'
 
 class LoginScreen extends React.Component {

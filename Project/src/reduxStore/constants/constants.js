@@ -8,4 +8,5 @@ export const rqStatistic = 'rqStatistic'
 export const findUser_OnLogin = 'findUser_OnLogin'
 export const findUser_Error = 'findUser_Error'
 
-export const setCurrentUser_Auth = 'setCurrentUser_Auth'
+export const setAccountInformation = 'setAccountInformation'
+export const setAccountError = 'setAccountError'

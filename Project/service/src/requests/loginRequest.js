@@ -28,6 +28,7 @@ const loginRequest = async (req, res) => {
                     })
                     res.status(200).send({
                         logged: true,
+                        created: row[0].created,
                         username: row[0].username,
                         token: token
                     })

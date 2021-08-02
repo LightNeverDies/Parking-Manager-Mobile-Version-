@@ -10,6 +10,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore, persistReducer } from 'redux-persist'
 import combineReducer from '@src/reduxStore/combineReducer'
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import jwt_decode from "jwt-decode"
 
 const persistConfig = {
   key: 'root',
@@ -35,17 +36,26 @@ class App extends React.Component {
 
   authChecker = async() => {
     const auth = await AsyncStorage.getItem('token')
-    this.setState({ value: auth })
+    if(auth !== null) {
+      const { exp } = jwt_decode(auth)
+      if(Date.now() >= exp * 1000) {
+        this.setState({ value: null })
+      } else {
+        this.setState({ value: auth })
+      }
+    }
+    this.setState({ value: null })
+
   }
 
   checkUserHasToken = () => {
-      if(this.state.value != null) {
+      if(this.state.value !== null) {
         return ( 
             <NavigationContainer>
               <AuthRootStack/>
             </NavigationContainer>
         )
-      } else { 
+      } else {
         return (
           <>
             <NavigationContainer>

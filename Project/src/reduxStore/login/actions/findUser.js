@@ -1,10 +1,9 @@
-import { findUser_OnLogin, findUser_Error, setCurrentUser_Auth } from '../../constants/constants'
-import jwt_decode from "jwt-decode"
+import { findUser_OnLogin, findUser_Error } from '../../constants/constants'
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export const userFind = (email, password) => async (dispatch) => {
     const data = { email: email, password: password }
-    await fetch(`http://192.168.1.5:3000/user/login`, {
+    await fetch(`http://192.168.1.4:3000/user/login`, {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -19,13 +18,12 @@ export const userFind = (email, password) => async (dispatch) => {
                 type: findUser_OnLogin,
                 payload: { 
                     logged: result.logged,
-                    username: result.username
+                    username: result.username,
+                    accountCreated: result.created
                 }
             })
             const token = result.token
             AsyncStorage.setItem("token", token)
-            // const decoded = jwt_decode(token)
-            // dispatch(setCurrentUser(decoded, result.username))
         } else {
             dispatch({
                 type: findUser_Error,
@@ -34,35 +32,6 @@ export const userFind = (email, password) => async (dispatch) => {
                     error: result.error
                 }
             })
-            getLogout(dispatch)
         }
     }).catch((err) => err.message)
-}
-
-export const getUserProfile = (username) => async(dispatch) => {
-    await fetch(`http://192.168.1.5:3000/user/?username=${username}`)
-    .then((response) => response.json()
-    .then((result) => {
-        dispatch({
-            type: setCurrentUser_Auth,
-            payload: {
-                username: result.username,
-                email: result.email,
-                accountCreated: result.dataCreated
-            }
-        })
-    })).catch((err) => err.message)
-}
-
-export const getLogout = async(dispatch) => {
-    AsyncStorage.removeItem('token')
-    dispatch(setCurrentUser({}))
-}
-
-export const setCurrentUser = (decoded, user) => {
-    return {
-        type: setCurrentUser_Auth,
-        payload: decoded,
-        userProfile: user
-    }
 }

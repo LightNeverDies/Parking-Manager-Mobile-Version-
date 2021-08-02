@@ -1,13 +1,15 @@
 import React from 'react'
 import { StyleSheet, View, Text, Dimensions, ScrollView } from 'react-native'
+import ButtonHub from '@src/components/ButtonImage/ButtonImage'
 import LogoHolder from '@src/components/LogoHolder/LogoHolder'
-import BottomNavBar from '../../components/BottomNavBar/BottomNavBar'
+import BottomNavBar from '@src/components/BottomNavBar/BottomNavBar'
 
 import Information from '../Information/Information'
 import Account from '../Account/Account'
 import Parking from '../Parking/Parking'
 import Payment from '../Payment/Payment'
 
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { MaterialCommunityIcons, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { connect } from 'react-redux'
 
@@ -46,12 +48,23 @@ class Main extends React.Component {
                 <Main></Main>   
         }
     }
+
+    logOut = () => {
+        const { navigate } = this.props.navigation
+        AsyncStorage.removeItem('token')
+        navigate('Login')
+    }
    
     renderMainScreen = () => {
         return(
             <View style={styles.loginContainer} >
                 <View style= {styles.top}>
-                    <Text style={{ color: "white", marginTop: 10 }}> Welcome {this.props.user}</Text>
+                    <Text style={{ color: "white", marginTop: 10, flex: 1, textAlign: 'center' }}> Welcome {this.props.user}</Text>
+                    <View style={{ justifyContent: 'center', alignItems: 'flex-end' }}>
+                        <ButtonHub  onPress = { this.logOut }>
+                            <MaterialIcons name="exit-to-app" size={30} color="white" />
+                        </ButtonHub>
+                    </View>
                 </View>
                 <View style = {{ flex:1 }} >
                     <LogoHolder source={require('../../../assets/favicon.png')}/>
@@ -126,10 +139,11 @@ const styles = StyleSheet.create({
         fontSize: 10
     },
     top: {
+        flexDirection: 'row',
+        justifyContent: 'center',
         width: Dimensions.get('window').width,
         height: 40,
         backgroundColor: '#12285c',
-        alignItems: 'center',
     },
     mainContainer: {
         height: "70%",
@@ -161,4 +175,8 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, null)(Main)
+const mapDispatchToProps = dispatch => ({
+    
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main)
