@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, Text, Dimensions, ScrollView } from 'react-native'
+import { StyleSheet, View, Text, Dimensions, ScrollView, KeyboardAvoidingView } from 'react-native'
 import ButtonHub from '@src/components/ButtonImage/ButtonImage'
 import LogoHolder from '@src/components/LogoHolder/LogoHolder'
 import BottomNavBar from '@src/components/BottomNavBar/BottomNavBar'
@@ -22,10 +22,6 @@ class Main extends React.Component {
         }
     }
 
-    componentDidMount() {
-
-    }
-
     renderMainContainer = (active) => {
         switch (active) {
             case 1:
@@ -45,10 +41,19 @@ class Main extends React.Component {
                     <Account></Account>
                 )
             default:
-                <Main></Main>   
+                return (
+                    <>
+                        {this.renderHomeScreen()}
+                    </>
+                ) 
         }
     }
 
+    renderHomeScreen = () => {
+        return (
+            <Text>Home Page</Text>
+        )
+    }
     logOut = () => {
         const { navigate } = this.props.navigation
         AsyncStorage.removeItem('token')
@@ -69,9 +74,13 @@ class Main extends React.Component {
                 <View style = {{ flex:1 }} >
                     <LogoHolder source={require('../../../assets/favicon.png')}/>
                 </View>
-                <ScrollView style = {styles.mainContainer}>
-                    {this.renderMainContainer(this.state.active)}
-                </ScrollView>
+                <KeyboardAvoidingView
+                    style={styles.keyboard}
+                    behavior={Platform.OS == "ios" ? "padding" : "height"}>
+                    <ScrollView style={styles.mainContainer}>
+                        {this.renderMainContainer(this.state.active)}
+                    </ScrollView>
+                </KeyboardAvoidingView>
                 <View style = {styles.navbarBottom}>
 
                 <BottomNavBar onPress = {() => {this.setState({ active: 0 })} }>
@@ -138,6 +147,13 @@ const styles = StyleSheet.create({
         textAlign: 'center', 
         fontSize: 10
     },
+    keyboard: {
+        flex: 4,
+        marginTop: 10,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        width: "100%"
+    },
     top: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -146,8 +162,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#12285c',
     },
     mainContainer: {
-        height: "70%",
-        width: '100%',
         borderColor: 'white',
         borderWidth: 0.2,
     },

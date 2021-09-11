@@ -36,16 +36,12 @@ class App extends React.Component {
 
   authChecker = async() => {
     const auth = await AsyncStorage.getItem('token')
-    if(auth !== null) {
-      const { exp } = jwt_decode(auth)
-      if(Date.now() >= exp * 1000) {
-        this.setState({ value: null })
-      } else {
-        this.setState({ value: auth })
-      }
+    const { exp } = jwt_decode(auth)
+    if(Date.now() >= exp * 1000) {
+      this.setState({ value: null })
+    } else {
+      this.setState({ value: auth })
     }
-    this.setState({ value: null })
-
   }
 
   checkUserHasToken = () => {

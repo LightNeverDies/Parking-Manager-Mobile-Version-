@@ -100,12 +100,12 @@ class Account extends React.Component {
 
     onSettingsPage = () => {
         return (
-            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+            <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
                 <View style = {styles.mainContainer}>
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end'}}>
                         <Text style = {{color: 'white', fontSize: 20, width: Dimensions.get('window').width, textAlign: 'right', marginRight: 10 }}>Balance {this.state.balance}$</Text>
                     </View>
-                    <View style = {{ position: 'absolute', left: 0, top: 0, height: Dimensions.get('window').height, alignItems: 'center'}}>
+                    <View style = {{ position: 'absolute', left: 0, top: -23, height: Dimensions.get('window').height, alignItems: 'center'}}>
                         <LogoHolder onPress={ this.onClickImage } source={this.state.carImage[this.state.currentImage]}/>
                     </View>
                     <View style={styles.columnLine}>
