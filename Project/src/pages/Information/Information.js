@@ -15,7 +15,7 @@ class Information extends React.Component {
 
 
     render() {
-
+        console.log(this.props.data)
         const data = Object.values(this.props.data).map(item => {
             return item
         })

@@ -5,7 +5,7 @@ import { StyleSheet, View, Text, Dimensions } from 'react-native';
 const Cards = ({ information, onPress, active }) => {
   return information.map((park) => {
     return(
-        <View style={{ flexDirection: 'row'}}>
+        <View key={park.parkSpace} style={{ flexDirection: 'row'}}>
           {CardPosition(park, onPress, active)}
         </View>
     )
@@ -13,7 +13,7 @@ const Cards = ({ information, onPress, active }) => {
 
 }
 
-const CardPosition = (park, onPress, active) => {
+const CardPosition = (park) => {
     return (
         <View style={styles.mainContainer}>
             <Text style={styles.textParkSpace}>Parking Place {park.parkSpace}</Text>

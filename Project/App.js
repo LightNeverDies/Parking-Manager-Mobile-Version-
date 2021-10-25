@@ -1,4 +1,4 @@
-import React from "react";
+                                                                                                                                                                                                                                                                                                   import React from "react";
 import { StyleSheet, View} from "react-native";
 import { createStore, applyMiddleware } from 'redux'
 import { NavigationContainer } from '@react-navigation/native';
@@ -25,7 +25,7 @@ class App extends React.Component {
   constructor() {
     super()
     this.state = {
-      value: ''
+      value: null
     }
   }
 
@@ -35,13 +35,19 @@ class App extends React.Component {
   }
 
   authChecker = async() => {
-    const auth = await AsyncStorage.getItem('token')
-    const { exp } = jwt_decode(auth)
-    if(Date.now() >= exp * 1000) {
-      this.setState({ value: null })
-    } else {
-      this.setState({ value: auth })
-    }
+      const auth = await AsyncStorage.getItem('token')
+      if(auth) {
+        const { exp } = jwt_decode(auth)
+        try {
+          if(Date.now() >= exp * 1000) {
+            this.setState({ value: null })
+          } else {
+            this.setState({ value: auth })
+          }
+        } catch(err) {
+          console.log(err.message)
+        }
+      }
   }
 
   checkUserHasToken = () => {

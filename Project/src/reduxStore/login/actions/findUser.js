@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export const userFind = (email, password) => async (dispatch) => {
     const data = { email: email, password: password }
-    await fetch(`http://192.168.1.4:3000/user/login`, {
+    await fetch(`http://192.168.1.7:3000/user/login`, {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -32,6 +32,12 @@ export const userFind = (email, password) => async (dispatch) => {
                     error: result.error
                 }
             })
+            try {
+                AsyncStorage.removeItem(token)
+                return true
+            } catch(exception) {
+                return false
+            }
         }
-    }).catch((err) => err.message)
+    }).catch((err) => console.log(err.message))
 }

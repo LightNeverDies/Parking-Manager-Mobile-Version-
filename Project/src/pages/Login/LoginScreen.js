@@ -10,9 +10,9 @@ import { userFind } from '@src/reduxStore/login/actions/findUser'
 import { Reset } from '@src/reduxStore/register/actions/Reset'
 import { connect } from 'react-redux'
 
-class LoginScreen extends React.Component {
+let unsubscribe = null
 
-    NetInfoSubscription = null
+class LoginScreen extends React.Component {
 
     constructor(){
         super()
@@ -25,18 +25,13 @@ class LoginScreen extends React.Component {
     }
 
     componentDidMount() {
-        this.NetInfoSubscription = NetInfo.addEventListener(
-            this.handleConnectivityChange
+        unsubscribe = NetInfo.addEventListener(state =>
+            this.setState({ connection_status: state.isConnected })
         )
-        this.test
-    }
-
-    handleConnectivityChange = async(state) => {
-        this.setState({ connection_status: state.isConnected })
     }
 
     componentWillUnmount() {
-        this.NetInfoSubscription && this.NetInfoSubscription()
+        if(unsubscribe != null) unsubscribe()
     }
 
     onRegister = () => {
@@ -90,8 +85,7 @@ class LoginScreen extends React.Component {
     )
     }
 }
-// #12285c
-// #00a2de
+
 const styles = StyleSheet.create({
     top: {
         width: Dimensions.get('window').width,
