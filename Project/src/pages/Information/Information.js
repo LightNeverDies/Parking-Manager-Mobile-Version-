@@ -1,8 +1,9 @@
 import React from 'react'
-import { StyleSheet, View, Text, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, Dimensions, FlatList } from 'react-native';
 import { BarChart } from 'react-native-chart-kit'
 import { requestStatistic } from '@src/reduxStore/statistic/actions/Statistic'
 import { connect } from 'react-redux'
+import info from './information.json'
 
 class Information extends React.Component {
     constructor() {
@@ -10,15 +11,31 @@ class Information extends React.Component {
     }
     
     componentDidMount() {
-        this.props.requestStatistic()
+        if(!this.props.data && this.props.data.length == 0) {
+            this.props.requestStatistic()
+        }
+    }
+
+    renderInformation = (data) => {
+
+        return (
+            data.map((el) => {
+                return(
+                    <View key={el.id} style={{ width: Dimensions.get('window').width, height:'auto', backgroundColor:'#fb8c00', margin:5}}>
+                        <Text style = {{ color:'white', fontSize:13, textAlign:'left', lineHeight: 20}} key={el.id}>{el.date} : {el.update}</Text>
+                    </View>
+                )
+            })
+        )
     }
 
 
     render() {
-        console.log(this.props.data)
+
         const data = Object.values(this.props.data).map(item => {
             return item
         })
+        
         const count = data.map(c => {
             return c.count
         })
@@ -26,10 +43,12 @@ class Information extends React.Component {
         const date = data.map(d => {
             return d.date
         })
-     
+        
+
         return (
         <View style={styles.loginContainer}>
-            <View style = {styles.mainContainer}>
+                <Text style = {styles.textStyle}>News</Text>
+                {this.renderInformation(info['Added features'])}
                 <Text style = {styles.textStyle}>Users Registered By Month</Text>
                 <BarChart
                 data={{
@@ -40,7 +59,7 @@ class Information extends React.Component {
                       }
                     ]
                   }}
-                width={Dimensions.get('window').width}
+                width={Dimensions.get('screen').width}
                 height={220}
                 fromZero= {true}
                 verticalLabelRotation={0}
@@ -64,7 +83,6 @@ class Information extends React.Component {
                     fillShadowGradientOpacity:1,
                   }}
                 />
-            </View>
         </View>
         )
     }
@@ -84,6 +102,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textAlign: 'center',
     },
+    
 
 })
 

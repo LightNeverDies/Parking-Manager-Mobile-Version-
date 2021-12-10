@@ -14,31 +14,33 @@ const loginRequest = async (req, res) => {
             let email = req.body.email
             let password = req.body.password
             con.query(`SELECT * FROM User WHERE email = '${email}'`, (err, row) => {
-                console.log(email)
                 if(err) {
                     res.send(messageError.errorConnection)
                 }
-                if(row.length < 0) {
-                    return res.status(400).send('The user not found')
+                else {
+                    if(row.length < 0) {
+                        return res.status(400).send('The user not found')
+                    }
+                    if(row.length > 0 && bcrypt.compareSync(password, row[0].password)){
+                        const token = jwt.sign({
+                            username: row[0].username
+                        }, secret, {
+                            expiresIn: '1d'
+                        })
+                        res.status(200).send({
+                            logged: true,
+                            created: row[0].created,
+                            username: row[0].username,
+                            token: token
+                        })
+                    } else {
+                        res.status(400).send({
+                            logged: false,
+                            error: messageError.errorUserLogged
+                        })
+                    }
                 }
-                if(row.length > 0 && bcrypt.compareSync(password, row[0].password)){
-                    const token = jwt.sign({
-                        username: row[0].username
-                    }, secret, {
-                        expiresIn: '1d'
-                    })
-                    res.status(200).send({
-                        logged: true,
-                        created: row[0].created,
-                        username: row[0].username,
-                        token: token
-                    })
-                } else {
-                    res.status(400).send({
-                        logged: false,
-                        error: messageError.errorUserLogged
-                    })
-                }
+                
             })
         }
     })

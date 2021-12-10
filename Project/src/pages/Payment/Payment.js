@@ -3,13 +3,17 @@ import { StyleSheet, View, Text } from 'react-native'
 import { TextInput } from 'react-native-paper'
 import { MaskedText } from "react-native-mask-text";
 import { Picker } from '@react-native-community/picker';
+import Button from '../../components/Buttons/Buttons'
+import { HelperText } from 'react-native-paper'
+import { addBalance } from '../../reduxStore/payment/actions/addBalance'
+import { connect } from 'react-redux';
 
 class Payment extends React.Component {
     constructor() {
         super()
         this.state = {
 
-            balance: '',
+            funds: 5,
             errorBalance: '',
 
             exp_date: '',
@@ -17,12 +21,64 @@ class Payment extends React.Component {
             card_holder: '',
             card_number: '',
 
-            errorCardHolder: '',
-            errorSecurityCode: '',
-            errorCardNumber: '',
+            error: '',
+            errorStatus: true,
+
             errorExpDate: '',
+            errorExpDateStatus: true
+        }
+    }
 
+    expDateValidator = async(date) => {
+        const firstDigit = date[0]
+        const secondDigit = date[1]
+        switch(firstDigit) {
+            case '0': {
+                if(secondDigit >= '0' && secondDigit <= '9') {
+                    this.state.errorExpDateStatus = true
+                }
+                return true
+            }
+            case '1': {
+                if(secondDigit >= '0' && secondDigit <= '2') {
+                    this.state.errorExpDateStatus = true
+                    return true
+                } else {
+                    this.state.errorExpDateStatus = false
+                    this.setState({ errorExpDate: 'Invalid month' })
+                }
+                return true
 
+            }
+            default: {
+                this.state.errorExpDateStatus = false
+                this.setState({ errorExpDate: 'Invalid expired date' })
+                return false
+            }
+        }
+    }
+
+    addBalance = async() => {
+        
+        const { username } = this.props
+
+        const { card_holder, card_number, security_code, exp_date, funds } = this.state
+
+        if(card_holder != '' && security_code != '' && exp_date != '' && card_number != '') {
+            const holder = card_holder.split(' ')
+            this.state.errorStatus = true
+
+            const firstName = holder[0]
+            const lastName = holder[1]
+           
+            this.expDateValidator(exp_date)
+            if(this.state.errorExpDateStatus == true)  {
+                await this.props.addBalance(username, card_number, firstName, lastName, security_code, exp_date, funds)
+            }
+            
+        } else {
+            this.state.errorStatus = false
+            this.setState({ error: "Please fill all fields" })
         }
     }
 
@@ -31,7 +87,7 @@ class Payment extends React.Component {
             <View>
                 <View style={styles.card}>
                     <View style={{ flexDirection: 'row', margin: 10 }}>
-                        <Text style={{ color:'white', fontSize: 30 }}>BANK</Text>
+                        <Text style={{ color:'white', fontSize: 30 }}>Credit Card</Text>
                         <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'flex-end'}}>
                             <View style={{backgroundColor: '#C60000', width:44, height:44, borderRadius: 22, zIndex: 1}}/>
                             <View style={{backgroundColor: '#F79400',  width:44, height:44, borderRadius: 22, right: 15 }}/>
@@ -52,7 +108,7 @@ class Payment extends React.Component {
                 </View>
                 <View style={styles.container}>
                     <View style={{ flexDirection: 'row'}}>
-                        <TextInput style={styles.inputField} underlineColor="white" keyboardType={'numeric'} theme={{ colors: {placeholder: 'white', primary: 'white'} }}  maxLength={16} label='Card Number' mode='flat' onChangeText={value => this.setState({ card_number: value })}/>
+                        <TextInput style={styles.inputField} underlineColor="white" keyboardType={'numeric'} theme={{ colors: {placeholder: 'white', primary: 'white'} }}  maxLength={16} label='Card Number' mode='flat' onChangeText={value => this.setState({ card_number: value })} />
                         <TextInput style={styles.inputField} underlineColor="white" theme={{ colors: {placeholder: 'white', primary: 'white'} }} label='Card Holder' mode='flat' onChangeText={value => this.setState({ card_holder: value })}/>
                     </View>
                     <View style={{ flexDirection: 'row'}}>
@@ -61,16 +117,19 @@ class Payment extends React.Component {
                     </View>
                         <Picker
                             mode="dropdown"
-                            selectedValue={this.state.balance}
+                            selectedValue={this.state.funds}
                             style={{height: 50, width: 100, color: 'white', marginTop: 10}}
                             onValueChange={(itemValue) =>
-                                this.setState({balance: itemValue})
+                                this.setState({funds: itemValue})
                             }>
                             <Picker.Item label="5€" value="5" />
                             <Picker.Item label="10€" value="10" />
                             <Picker.Item label="20€" value="20" />
                             <Picker.Item label="50€" value="50" />
-                        </Picker>   
+                        </Picker>
+                        <Button onPress={ this.addBalance } style={styles.buttonStyle}>Add</Button>
+                        {!this.state.errorStatus ? <HelperText type="error" style={ styles.errorMessage } visible = {!this.state.errorStatus}>{ this.state.error }</HelperText> : null }
+                        {!this.state.errorExpDateStatus ? <HelperText type="error" style={ styles.errorMessage } visible={!this.state.errorExpDateStatus}>{ this.state.errorExpDate }</HelperText> : null }
                 </View>
 
             </View>
@@ -109,7 +168,27 @@ const styles = StyleSheet.create({
         flex:1,
         flexDirection: 'column',
         alignItems: 'center'
+    },
+    buttonStyle: {
+        fontSize: 30,
+        backgroundColor:"red"
+    },
+    errorMessage: {
+        alignSelf: 'center',
+        marginLeft: 160,
+        width: "80%"
     }
 })
 
-module.exports = Payment
+const mapStateToProps = (state) => {
+    return {
+        username: state.login.username
+    }
+}
+
+const mapDispatchToProps = dispatch => ({
+    addBalance: (username, card_number, first_name, last_name, security_code, exp_date, funds ) => dispatch(addBalance(username, card_number, first_name, last_name, security_code, exp_date, funds ))
+})
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Payment)

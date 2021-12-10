@@ -1,10 +1,10 @@
 import React from "react"
-import { StyleSheet, View, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Image, TouchableOpacity, Dimensions } from 'react-native'
 
 const LogoHolder = (props) => {
     return(
         <View style={styles.imageContainer}>
-            <TouchableOpacity onPress= {props.onPress}>
+            <TouchableOpacity style= {props.styles} onPress= {props.onPress}>
                 <Image source={props.source}/>
             </TouchableOpacity>
         </View>
@@ -13,10 +13,12 @@ const LogoHolder = (props) => {
 
 const styles = StyleSheet.create({
     imageContainer: {
-        flex: 1,
+        flex: 0.2,
         alignItems: 'center',
         justifyContent: 'center',
-        width: "10%"
+        width: 50,
+        marginBottom:10,
+        marginTop: 10
     }
 })
 

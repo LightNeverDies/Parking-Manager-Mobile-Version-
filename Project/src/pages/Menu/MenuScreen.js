@@ -1,9 +1,8 @@
 import React from 'react'
-import { StyleSheet, View, Text, Dimensions, ScrollView, KeyboardAvoidingView } from 'react-native'
+import { StyleSheet, View, Text, Dimensions, ScrollView } from 'react-native'
 import ButtonHub from '@src/components/ButtonImage/ButtonImage'
 import LogoHolder from '@src/components/LogoHolder/LogoHolder'
 import BottomNavBar from '@src/components/BottomNavBar/BottomNavBar'
-
 import Information from '../Information/Information'
 import Account from '../Account/Account'
 import Parking from '../Parking/Parking'
@@ -71,16 +70,10 @@ class Main extends React.Component {
                         </ButtonHub>
                     </View>
                 </View>
-                <View style = {{ flex:1 }} >
-                    <LogoHolder source={require('../../../assets/favicon.png')}/>
-                </View>
-                <KeyboardAvoidingView
-                    style={styles.keyboard}
-                    behavior={Platform.OS == "ios" ? "padding" : "height"}>
-                    <ScrollView style={styles.mainContainer}>
-                        {this.renderMainContainer(this.state.active)}
-                    </ScrollView>
-                </KeyboardAvoidingView>
+                <LogoHolder source={require('../../../assets/favicon.png')}/>
+                <ScrollView style={styles.mainContainer}>
+                    {this.renderMainContainer(this.state.active)}
+                </ScrollView>
                 <View style = {styles.navbarBottom}>
 
                 <BottomNavBar onPress = {() => {this.setState({ active: 0 })} }>
@@ -147,13 +140,6 @@ const styles = StyleSheet.create({
         textAlign: 'center', 
         fontSize: 10
     },
-    keyboard: {
-        flex: 4,
-        marginTop: 10,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        width: "100%"
-    },
     top: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -162,8 +148,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#12285c',
     },
     mainContainer: {
+        flex:1,
         borderColor: 'white',
         borderWidth: 0.2,
+        width: Dimensions.get('screen').width,
+        height: Dimensions.get('screen').height,
+        paddingBottom: 300
     },
     loginContainer: {
         flex:1,

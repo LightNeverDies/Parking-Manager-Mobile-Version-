@@ -78,11 +78,11 @@ class LoginScreen extends React.Component {
     }
 
     render() {
-    return (
-        <>
-         {this.renderLoginScreen()}
-        </>
-    )
+        return (
+            <>
+             {this.renderLoginScreen()}
+            </>
+        )
     }
 }
 
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#12285c',
     },
     loginContainer: {
-        flex:2,
+        flex:1,
         height: "100%",
         alignItems: 'center',
         justifyContent: 'center',
@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'column',
         width: "100%",
+        marginTop: 140,
         marginBottom: 100
     },
 })

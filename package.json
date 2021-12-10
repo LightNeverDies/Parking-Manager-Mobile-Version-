@@ -10,7 +10,7 @@
     "build-mobile": "cd ui && npm i",
     "start": "npm-run-all --parallel start-mobile start-service",
     "build": "npm-run-all --parallel build-service build-mobile",
-    "postinstall": "cd service && npm install"
+    "postinstall": "cd Project/service && npm install"
   },
   "repository": {
     "type": "git",

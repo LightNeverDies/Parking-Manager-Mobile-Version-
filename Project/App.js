@@ -15,11 +15,17 @@ import jwt_decode from "jwt-decode"
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
+  whitelist: [
+    'login',
+    'statistic',
+    'userHistory'
+  ]
 }
 
 const persistedReducer = persistReducer(persistConfig, combineReducer);
 const store = createStore(persistedReducer, applyMiddleware(thunk))
 let persistor = persistStore(store);
+
 
 class App extends React.Component {
   constructor() {

@@ -5,7 +5,10 @@ const errorMessagesBE = {
     errorUsername: "Username already exists", 
     errorUserNotFound: "Username/Password is incorrect",
     errorUserLogged: "Email/Password is incorrect",
-    errorUserInformation: "No Information Found"
+    errorUserInformation: "No Information Found",
+    errorCarsLimit: 'Limit of three cars per account',
+    errorCarExists: 'Already exists in your account',
+    errorNoInformation: 'No data available'
 }
 
 module.exports = errorMessagesBE

@@ -22,11 +22,19 @@ const userCreated = async(req, res) => {
                 console.log(error)
                 return error
               }
+              
               if(row.length > 0) {
-                 res.send({
+                if(user.username) {
+                  res.send({
+                    data: row,
+                    status: '1',
+                    error: messageError.errorUsername })
+                } else {
+                  res.send({
                     data: row,
                     status: '1',
                     error: messageError.errorEmail })
+                }
                  con.release()
               }
               else {
