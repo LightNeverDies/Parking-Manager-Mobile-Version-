@@ -7,6 +7,11 @@ import userBalance from './userBalance/reducers/userBalance_reducers'
 import userCars from './userCars/reducers/userCars_reducers'
 import historyPayment from './history/reducers/history_reducers'
 import registeredCars from './registeredCars/reducers/registeredCars_reducer'
+import checkBox from './checkBox/reducers/checkBox_reducers'
+import setUserLocation from './parkingLots/reducers/setUserLocation_reducers'
+import sortedTable from './table/reducers/table_reducers'
+import checkInternet from './checkInternet/reducers/checkInternet_reducers'
+import getParkings from './getParkings/reducers/getParkings_reducers'
 
 export default reducers = combineReducers ({
     register,
@@ -16,5 +21,10 @@ export default reducers = combineReducers ({
     userBalance,
     userCars,
     historyPayment,
-    registeredCars
+    registeredCars,
+    checkBox,
+    setUserLocation,
+    sortedTable,
+    checkInternet,
+    getParkings
 })

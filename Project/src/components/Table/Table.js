@@ -1,138 +1,191 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ToastAndroid } from 'react-native'
+import { connect } from 'react-redux'
+import { sortedTable, setType } from '@src/reduxStore/table/actions/table_actions'
+import { Button } from 'react-native-paper'
 
-const Table = ({ headers, content, text, itemPerPage }) => {
-    const [currPage, setPage] = useState('')
-    const { slice, range } = useTable(content, currPage, itemPerPage);
-    
-    return (
-        <>
-            {TableText(text, content)}
-            <View style={styles.header}>
-                {TableHeader(headers)}
-            </View>
-            {TableContent(slice)}
-            {Pagination(range, setPage, currPage, slice)}
-        </>
-    )
-}
-
-const calculateRange = (content, itemPerPage) => {
-    const range = []
-    const num = Math.ceil(content.length / itemPerPage)
-    
-    for(let i = 1; i <= num; i++) {
-        range.push(i)
+class Table extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            page: 1,
+            check: '',
+        }
     }
 
-    return range
-}
-
-const sliceData = (content, page, itemPerPage) => {
-    return content.slice((page - 1) * itemPerPage, page * itemPerPage)
-}
-
-const TableHeader = (headers) => {
-    return headers?.map((el, index) => {
+    tableText = () => {
         return (
-            <View key={index}>
-                <Text style={styles.textRow}>{el}</Text>
+            <View>
+                {
+                    (this.props.text && this.props.content.length > 0) ?
+                        <Text style={styles.textStyle}>{this.props.text} {this.props.content.length}</Text>
+                        : null
+                }
             </View>
         )
-    })
-}
+    }
 
-const TableText = (text, content) => {
-    return (
-        <View>
-            {
-                (text && content.length > 0) ?
-                    <Text style={styles.textStyle}>{text} {content.length}</Text>
-                : null
+    toogleChanged = (el) => {
+        this.setState({ check: !this.state.check })
+        this.sortTableByKey(el)
+    }
+
+    sortTableByKey = (key) => {
+        if (key != undefined && this.state.check != undefined) {
+            let lowerCaseKeys = key.toLowerCase()
+            let newContent = ''
+    
+            const checkKey = () => {
+                switch (lowerCaseKeys) {
+                    case "symbol of access":
+                        return lowerCaseKeys = "disabledParkingSpace"
+                    case "user car number":
+                        return lowerCaseKeys = "carNumber"
+                    default:
+                        return lowerCaseKeys
+                }
             }
-        </View>
-    )
-}
+    
+    
+            if (this.state.check == false) {
+                if (checkKey() == "funds") {
+                    newContent = this.props.content.sort((a, b) => {
+                        return a[checkKey()] - b[checkKey()]
+                    })
+                } else {
+                    newContent = this.props.content.sort((a, b) => {
+                        return a[checkKey()].localeCompare(b[checkKey()])
+                    })
+                }
+            } else if (this.state.check == true) {
+                if (checkKey() == "funds") {
+                    newContent = this.props.content.sort((a, b) => {
+                        return b[checkKey()] - a[checkKey()]
+                    })
+    
+                } else {
+                    newContent = this.props.content.sort((a, b) => {
+                        return b[checkKey()].localeCompare(a[checkKey()])
+                    })
+                }
+    
+            }
+            return newContent
+        }
+    
+        return content
+    }
 
-const TableContent = (slice) => {
-    const mapSlice = slice.map((el) => {
-        return Object.values(el)
-    })
-
-    return mapSlice.map((el, index) => {
+    tableHeader = () => {
         return (
-            <View style={styles.tableContent} key={index}>
-                {el.map((item, i) => {
+            <View style={styles.header}>
+                {this.props.headers?.map((el, index) => {
                     return (
-                        <Text key={i} style={styles.textStyleContent} onPress={() => ToastAndroid.show(`${item}`, ToastAndroid.SHORT)}>{item}</Text>
+                        <View key={index}>
+                            <Button key={el} onPress={() => { this.toogleChanged(el)}}>
+                                <Text style={styles.textRow}>{el}</Text>
+                            </Button>
+
+                        </View>
                     )
                 })}
             </View>
         )
-    })
+    }
+
+    tableContent = () => {
+        const { slice, range } = this.useTable()
+
+        return slice.map((el) => Object.values(el)).map((element, index) => {
+            return (
+                <View style={styles.tableContent} key={index}>
+                    {element.map((item, i) => {
+                        return (
+                            <Text key={i} style={styles.textStyleContent} onPress={() => ToastAndroid.show(`${item}`, ToastAndroid.SHORT)}>{item}</Text>
+                        )
+                    })}
+                </View>
+            )
+        })
+    }
+
+
+    calculateRange = () => {
+        const range = []
+        const num = Math.ceil(this.props.content.length / this.props.itemPerPage)
     
-}
-
-
-const useTable = (content, page, itemPerPage) => {
-    const [tableRange, setTableRange] = useState([])
-    const [slice, setSlice] = useState([])
-  
-    useEffect(() => {
-       if(content != undefined && itemPerPage != undefined && page != undefined) {
-        const range = calculateRange(content, itemPerPage)
-        setTableRange([...range])
-    
-        const slice = sliceData(content, page, itemPerPage)
-        setSlice([...slice])
-       }
-    }, [content, setTableRange, page, setSlice])
-  
-    return { slice, range: tableRange }
-}
-
-const Pagination = (range, setPage, page, slice) => {
-    const low = '<'
-    const big = '>'
-    useEffect(() => {
-        if(slice.length < 1 && page !== 1) {
-            setPage(1)
+        for (let i = 1; i <= num; i++) {
+            range.push(i)
         }
-    }, [slice, page, setPage])
+    
+        return range
+    }
+    
+    sliceData = () => {
+        return this.props.content.slice((this.state.page - 1) * this.props.itemPerPage, this.state.page * this.props.itemPerPage)  
+    }
 
-    return (
-        <View style={styles.paginator}>
-            <TouchableOpacity style={styles.button} key={'<'}
-            onPress={() => 
-            {
-                if(page <= 0 || page == 1) {
-                    setPage(1)
-                } else {
-                    setPage(page - 1)}
-                }
-            }>
-            <Text style={{ color: 'white', fontSize: 20 }}>{low}</Text>
-            </TouchableOpacity>
-            <Text style={{ color: 'white', fontSize: 20}}>{page}</Text>
-            <TouchableOpacity style={styles.button} key={'>'}
-            onPress={() => {
-                if(page < range.length ) {
-                    setPage(page + 1)
-                } else {
-                    setPage(1)
-                }
-            }}>
-            <Text style={{ color: 'white', fontSize: 20 }}>{big}</Text>
-            </TouchableOpacity>
-        </View>
-    )
+    useTable = () => {
+        const range = this.calculateRange()
+        const slice = this.sliceData()
+
+        return { slice, range}
+    }
+
+    tablePaginator = () => {
+        const { slice, range } = this.useTable()
+        const low = '<'
+        const big = '>'
+
+        if(slice.length < 1  && this.state.page !== 1) {
+            this.setState({ page: 1 })
+        }
+  
+        return (
+            <View style={styles.paginator}>
+                <TouchableOpacity style={styles.button} key={'<'}
+                    onPress={() => {
+                        if (this.state.page <= 0 || this.state.page == 1) {
+                            this.setState({ page: 1 })
+                        } else {
+                            this.setState({ page: this.state.page - 1 })
+                        }
+                    }
+                    }>
+                    <Text style={{ color: 'white', fontSize: 20 }}>{low}</Text>
+                </TouchableOpacity>
+                <Text style={{ color: 'white', fontSize: 20 }}>{this.state.page}</Text>
+                <TouchableOpacity style={styles.button} key={'>'}
+                    onPress={() => {
+                        if (this.state.page < range.length) {
+                            this.setState({ page: this.state.page + 1 })
+                        } else {
+                            this.setState({ page: 1 })
+                        }
+                    }}>
+                    <Text style={{ color: 'white', fontSize: 20 }}>{big}</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    render() {
+        return (
+            <>
+                {this.tableText()}
+                {this.tableHeader()}
+                {this.tableContent()}
+                {this.tablePaginator()}
+            </>
+        )
+    }
 }
 
 const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        borderRadius: 6,
+        borderRadius: 3,
         elevation: 3,
         backgroundColor: '#12285c',
         borderColor: 'white',
@@ -153,16 +206,18 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     textStyleContent: {
-        flex: 0.4,
-        padding: 0.2,
-        textAlignVertical: 'center', 
-        color: 'white', 
-        fontSize: 13, 
+        flex: 0.3,
+        padding: 0.5,
+        textAlignVertical: 'center',
+        color: 'white',
+        fontSize: 13,
         textAlign: 'center',
     },
     textRow: {
         color: 'white',
-        margin: 7
+        marginRight: 10,
+        marginTop: 7,
+        marginBottom: 7,
     },
     paginator: {
         justifyContent: 'center',
@@ -178,4 +233,18 @@ const styles = StyleSheet.create({
     }
 })
 
-module.exports =  Table
+const mapStateToProps = (state) => {
+    return {
+        sorted: state.sortedTable.sorted,
+        type: state.sortedTable.type,
+        status: state.sortedTable.status
+    }
+}
+
+
+const mapDispatchToProps = dispatch => ({
+    sortedTable: (sorted) => dispatch(sortedTable(sorted)),
+    setType: (type) => dispatch(setType(type))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Table)

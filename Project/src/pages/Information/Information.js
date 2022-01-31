@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, Text, Dimensions, FlatList } from 'react-native';
+import { StyleSheet, View, Text, Dimensions, ScrollView } from 'react-native';
 import { BarChart } from 'react-native-chart-kit'
 import { requestStatistic } from '@src/reduxStore/statistic/actions/Statistic'
 import { connect } from 'react-redux'
@@ -11,9 +11,7 @@ class Information extends React.Component {
     }
     
     componentDidMount() {
-        if(!this.props.data && this.props.data.length == 0) {
-            this.props.requestStatistic()
-        }
+        this.props.requestStatistic()
     }
 
     renderInformation = (data) => {
@@ -31,7 +29,6 @@ class Information extends React.Component {
 
 
     render() {
-
         const data = Object.values(this.props.data).map(item => {
             return item
         })
@@ -46,10 +43,11 @@ class Information extends React.Component {
         
 
         return (
-        <View style={styles.loginContainer}>
+        <ScrollView style={styles.scrollContainer}>
+            <View style={styles.loginContainer}>
                 <Text style = {styles.textStyle}>News</Text>
                 {this.renderInformation(info['Added features'])}
-                <Text style = {styles.textStyle}>Users Registered By Month</Text>
+                <Text style = {styles.textStyle}>Users Registered By Year and Month</Text>
                 <BarChart
                 data={{
                     labels: date,
@@ -84,6 +82,7 @@ class Information extends React.Component {
                   }}
                 />
         </View>
+        </ScrollView>
         )
     }
 
@@ -102,7 +101,14 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textAlign: 'center',
     },
-    
+    scrollContainer: {
+        flex:1,
+        borderColor: 'white',
+        borderWidth: 0.2,
+        width: Dimensions.get('screen').width,
+        height: Dimensions.get('screen').height,
+        paddingBottom: 300
+    }
 
 })
 

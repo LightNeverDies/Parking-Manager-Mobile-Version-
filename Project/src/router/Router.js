@@ -1,8 +1,8 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from "react";
 import LoginScreen from "@src/pages/Login/LoginScreen";
-import MenuScreen from "@src/pages/Menu/MenuScreen";
 import RegisterScreen from "@src/pages/Register/RegisterScreen"
+import MenuScreen from "@src/pages/Menu/MenuScreen";
 import Account from "@src/pages/Account/Account"
 import Parking from "@src/pages/Parking/Parking"
 import Payment from "@src/pages/Payment/Payment"

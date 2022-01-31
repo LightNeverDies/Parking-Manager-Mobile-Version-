@@ -17,7 +17,7 @@ const rqStatistic = async (req, res) => {
               } else {
 
                 const groupsByDate = row.reduce((groups, date) => {
-                  const D = moment(date.created).format('MMMM')
+                  const D = moment(date.created).format('MM/YYYY')
                   if (!groups[D]) {
                       groups[D] = [];
                     }

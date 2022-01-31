@@ -3,14 +3,14 @@ import React from 'react'
 import SocialButton from '@src/components/SocialButtons/SocialButtons'
 import LogoHolder from '@src/components/LogoHolder/LogoHolder'
 import ButtonComp from '@src/components/Buttons/Buttons'
-import NetInfo from '@react-native-community/netinfo'
 import CarLoader from '@src/components/CarLoader/CarLoader'
+import ConnectionChecker from '@src/components/ConnectionChecker/ConnectionChecker'
 import { HelperText } from 'react-native-paper'
 import { userFind } from '@src/reduxStore/login/actions/findUser'
 import { Reset } from '@src/reduxStore/register/actions/Reset'
 import { connect } from 'react-redux'
+//import { checkInternet } from '@src/reduxStore/checkInternet/actions/checkInternet'
 
-let unsubscribe = null
 
 class LoginScreen extends React.Component {
 
@@ -24,28 +24,21 @@ class LoginScreen extends React.Component {
         }
     }
 
-    componentDidMount() {
-        unsubscribe = NetInfo.addEventListener(state =>
-            this.setState({ connection_status: state.isConnected })
-        )
+    componentDidMount = () => {
+        //this.setState({ connection_status: this.props.check })
     }
-
-    componentWillUnmount() {
-        if(unsubscribe != null) unsubscribe()
-    }
-
+    
     onRegister = () => {
-        if(this.state.connection_status) {
+        //if(this.state.connection_status) {
             const { navigate } = this.props.navigation
             this.props.Reset()
             navigate('Register')
-        }
+        //}
     }
 
     onMenu = async() => {
         const { email, password } = this.state
         const { navigate } = this.props.navigation
-        if(this.state.connection_status) {
             if(email != '' && password != '') {
                 await this.props.userFind(email, password)
                 if(this.props.logged == true) {
@@ -55,12 +48,13 @@ class LoginScreen extends React.Component {
                     this.setState({ errorStatusLogged: false })
                 }
             }
-        }
     }
+
     renderLoginScreen = () => {
         return (
             <View style={styles.loginContainer}>
                     <View style= {styles.top}></View>
+                    {/* <ConnectionChecker/> */}
                     <LogoHolder source={require('../../../assets/favicon.png')}/>
                 <View style= {styles.container}>
                     <TextInput style={styles.inputField} placeholderTextColor="white" placeholder={"Email"} keyboardType="email-address" onChangeText={value => this.setState({ email: value })}/>
@@ -132,13 +126,15 @@ const mapStateToProps = (state) => {
         loading: state.login.loading,
         error: state.login.error,
         logged: state.login.logged,
-        username: state.login.username
+        username: state.login.username,
+        check: state.checkInternet.status
     }
 }
 
 const mapDispatchToProps = dispatch => ({ 
     userFind: (email, password) => dispatch(userFind(email, password)),
-    Reset: () => dispatch(Reset())
+    Reset: () => dispatch(Reset()),
+    checkInternet: (netInfo) => dispatch(checkInternet(netInfo))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)

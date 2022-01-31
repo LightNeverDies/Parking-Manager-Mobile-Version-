@@ -28,3 +28,11 @@ export const userCars_Loading = 'userCars_Loading'
 export const registeredCars_Success = 'registeredCars_Success'
 export const registeredCars_Failed = 'registeredCars_Failed'
 export const registeredCars_Loading = 'registeredCars_Loading'
+
+export const checkedChanged = 'checkedChanged'
+
+export const parkingLots_Success = 'parkingLots_Success'
+export const parkingLots_Failed = 'parkingLots_Failed'
+
+export const getParkings_Success = 'getParkings_Success'
+export const getParkings_Failed = 'getParkings_Failed'

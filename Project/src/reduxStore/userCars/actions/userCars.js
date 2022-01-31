@@ -1,7 +1,7 @@
 import { userCars_Success, userCars_Failed, userCars_Loading } from "../../constants/constants"
 
-export const userCars = (username, carNumber) => async (dispatch) => {
-    await fetch(`http://192.168.1.5:3000/user/cars/?username=${username}&carNumber=${carNumber}`)
+export const userCars = (username, carNumber, checked) => async (dispatch) => {
+    await fetch(`http://192.168.1.5:3000/user/cars/?username=${username}&carNumber=${carNumber}&checked=${checked}`)
     .then((response) => response.json()
     .then((result) => {
         if(!result.error) {

@@ -10,7 +10,7 @@ const userHistoryPayments = async(req,res) => {
         } else {
             let username = req.query.username
 
-            con.query(`SELECT username, time, funds FROM Payment WHERE username = '${username}'`, (error, data) => {
+            con.query(`SELECT username, time, type, funds FROM Payment WHERE username = '${username}'`, (error, data) => {
                 if(error) {
                     res.send(messageError.errorConnection)
                     console.log(error)

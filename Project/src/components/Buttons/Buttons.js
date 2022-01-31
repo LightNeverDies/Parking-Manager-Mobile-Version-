@@ -4,7 +4,7 @@ import bStyle from '@src/utils/buttonCustomVariables'
 
 const Buttons = (props) => {
         return(
-            <TouchableOpacity onPress= {props.onPress} style={[styles.buttonBody, props.styles]}>
+            <TouchableOpacity disabled={props.disabled ? props.disabled : null} onPress= {props.onPress} style={props.style ? props.style : styles.buttonBody}>
                 <Text style={styles.buttonText}>{props.children}</Text>
             </TouchableOpacity>
         )

@@ -9,7 +9,7 @@ const userRegisteredCars = async (req, res) => {
             })
         } else {
             let username = req.query.username
-            con.query(`SELECT carNumber FROM User_Cars WHERE username ='${username}'`, (error, result) => {
+            con.query(`SELECT carNumber, disabledParkingSpace  FROM User_Cars WHERE username ='${username}'`, (error, result) => {
               if(error) {
                   res.send(messageError.errorConnection)
                   console.log(error)

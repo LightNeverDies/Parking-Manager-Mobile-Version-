@@ -1,8 +1,14 @@
 const express = require('express')
+require('dotenv').config()
 const app = express()
+const http = require('http').createServer(app)
 const port = 3000
-const {Server} = require('socket.io')
-const server = new Server(8000)
+
+const io = require("socket.io-client")
+const clientSocket = io.connect("http://localhost:8000")
+
+const socketio = require('socket.io')
+const server = socketio(8002)
 
 const userChecker = require('../requests/userChecker')
 const rqStatistic = require('../requests/requestStatistic')
@@ -13,6 +19,11 @@ const userHistoryPayments = require('../requests/userHistoryPayments')
 const userBalance = require('../requests/userBalance')
 const userCars = require('../requests/userCars')
 const userRegisteredCars = require('../requests/userRegisteredCars')
+const parkingLots = require('../requests/parkingLots')
+const getParkings = require('../requests/getParkings')
+const raspBerryPiSpots = require('../requests/raspBerryPiSpots')
+const allParkingsLots = require('../requests/raspBerryPiSpots')
+
 
 app.use(express.json())
 app.use(
@@ -20,17 +31,6 @@ app.use(
         extended: true
     })
 )
-
-console.log("Info: Socket Server is running on port 8000")
-
-server.on("connection", (socket) => {
-  console.info(`Client connected [id=${socket.id}]`);
-  // initialize this client's sequence number
-
-  socket.on("disconnect", () => {
-      console.info(`Client disconnected [id=${socket.id}]`);
-  });
-});
 
 app.get('/', ( req, res ) => {
   res.send(true)
@@ -118,6 +118,23 @@ app.get('/user/registeredCars/', async( req,res ) => {
 
 })
 
+app.get('/parkingLots', async ( req,res ) => {
+  try{
+    await parkingLots.parkingLots( req, res )
+  } catch(e) {
+    console.log(e)
+  }
+
+})
+
+app.get('/getParkings', async ( req, res ) => {
+  try{
+    await getParkings.getParkings( req, res )
+  }catch(e) {
+    console.log(e)
+  }
+
+})
 
 app.use(async (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
@@ -126,6 +143,28 @@ app.use(async (req, res, next) => {
   next()
 })
 
-app.listen(port, () => {
+clientSocket.on("ParkingLots", async (data) => {
+  try {
+    await raspBerryPiSpots.raspBerryPiSpots(data)
+  } catch(e) {
+    console.log(e)
+  }
+
+})
+
+server.on('connection', (socket) => {
+  console.info(`Client connected to Backend [id=${socket.id}]`)
+
+  allParkingsLots.allParkingsLots(socket)
+  socket.on("parkinglotsChanged", (row, allData) => {
+      // update specific row with data and send it back to raspberryPI
+  })
+
+  socket.on('disconnect', () => {
+      console.info(`Client disconnected from Backend [id=${socket.id}]`)
+  })
+})
+
+http.listen(port, () => {
   console.log(`Info: HTTP Server is running on port ${port}`)
 });

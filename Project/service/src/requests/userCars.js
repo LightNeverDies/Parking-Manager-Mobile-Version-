@@ -8,9 +8,11 @@ const userCars = async(req, res) => {
                 message: messageError.errorConnection
             })
         } else {
+
             let user = {
                 username: req.query.username,
-                carNumber: req.query.carNumber
+                carNumber: req.query.carNumber,
+                checked: req.query.checked
             }
             con.query(`SELECT carNumber FROM User_Cars WHERE username='${user.username}'`, (error, result) => {
                 if(error) {
@@ -37,7 +39,7 @@ const userCars = async(req, res) => {
                                 error: messageError.errorCarExists
                             })
                         } else {
-                            con.query(`INSERT INTO User_Cars (username, carNumber) VALUES('${user.username}', '${user.carNumber}')`, (error) => {
+                            con.query(`INSERT INTO User_Cars (username, carNumber, disabledParkingSpace) VALUES('${user.username}', '${user.carNumber}', '${user.checked}')`, (error) => {
                                 if(error) {
                                     res.send(messageError.errorQuery)
                                     console.log(error)

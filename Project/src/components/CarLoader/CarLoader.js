@@ -34,13 +34,13 @@ class CarLoader extends React.Component {
 
     renderRoadDesign = () => {
         return (
-            <>
+            <View style={styles.container}>
                  <View style={styles.loginContainer}>
                     <Dash style={styles.dashed} dashGap={10} dashLength={10}/>
-                    <Text style = {{ position: "absolute", color: 'white', fontSize: 16 }}>No Internet Connection</Text>
+                    {/* <Text style = {{ position: "absolute", color: 'white', fontSize: 16 }}>No Internet Connection</Text> */}
                     <Animated.Image source={carImageRight} style={[styles.car, this.car.getLayout()]}/>
                  </View>
-            </>
+            </View>
         )
     }
 
@@ -54,6 +54,9 @@ class CarLoader extends React.Component {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        margin: 30
+    },
     loginContainer: {
         width: Dimensions.get('screen').width,
         height: 50,

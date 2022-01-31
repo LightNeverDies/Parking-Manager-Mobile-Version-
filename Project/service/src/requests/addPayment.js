@@ -17,6 +17,7 @@ const addPayment = async(req, res) => {
                 security_code: req.query.security_code,
                 exp_date: req.query.exp_date,
                 time: moment().format('YYYY-MM-DD HH:mm:ss'),
+                type: req.query.type,
                 funds: req.query.funds
             }
 
@@ -52,9 +53,9 @@ const addPayment = async(req, res) => {
                 con.release()
             })
 
-            con.query(`INSERT INTO Payment (username, card_number, first_name, last_name, security_code, exp_date, time, funds) 
+            con.query(`INSERT INTO Payment (username, card_number, first_name, last_name, security_code, exp_date, time, type, funds) 
             VALUES('${user.username}', '${user.card_number}', '${user.first_name}', '${user.last_name}', 
-                   '${user.security_code}', '${user.exp_date}', '${user.time}', '${user.funds}')`, (error) => {
+                   '${user.security_code}', '${user.exp_date}', '${user.time}', '${user.type}', '${user.funds}')`, (error) => {
                 if(error) {
                     res.send(messageError.errorQuery)
                     console.log(error)

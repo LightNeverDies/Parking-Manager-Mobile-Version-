@@ -11,6 +11,7 @@ import { persistStore, persistReducer } from 'redux-persist'
 import combineReducer from '@src/reduxStore/combineReducer'
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import jwt_decode from "jwt-decode"
+import { getConnectionResult } from "./src/components/ConnectionChecker/ConnectionChecker"
 
 const persistConfig = {
   key: 'root',
@@ -26,7 +27,6 @@ const persistedReducer = persistReducer(persistConfig, combineReducer);
 const store = createStore(persistedReducer, applyMiddleware(thunk))
 let persistor = persistStore(store);
 
-
 class App extends React.Component {
   constructor() {
     super()
@@ -35,10 +35,11 @@ class App extends React.Component {
     }
   }
 
-
   componentDidMount () {
     this.authChecker()
+    //checker.getConnectionResult()
   }
+
 
   authChecker = async() => {
       const auth = await AsyncStorage.getItem('token')
@@ -96,4 +97,3 @@ const styles = StyleSheet.create({
 });
 
 export default App
-
