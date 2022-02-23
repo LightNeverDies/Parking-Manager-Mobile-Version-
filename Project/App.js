@@ -11,19 +11,20 @@ import { persistStore, persistReducer } from 'redux-persist'
 import combineReducer from '@src/reduxStore/combineReducer'
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import jwt_decode from "jwt-decode"
-import { getConnectionResult } from "./src/components/ConnectionChecker/ConnectionChecker"
+import { logger } from 'redux-logger'
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
   whitelist: [
     'login',
-    'statistic',
-    'userHistory'
+    'statistic'
   ]
 }
 
 const persistedReducer = persistReducer(persistConfig, combineReducer);
+// if I need logger for all redux store 
+const middlewareList = [thunk, logger]
 const store = createStore(persistedReducer, applyMiddleware(thunk))
 let persistor = persistStore(store);
 
@@ -37,7 +38,6 @@ class App extends React.Component {
 
   componentDidMount () {
     this.authChecker()
-    //checker.getConnectionResult()
   }
 
 

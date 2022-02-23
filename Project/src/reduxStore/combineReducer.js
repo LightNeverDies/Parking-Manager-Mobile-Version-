@@ -12,6 +12,11 @@ import setUserLocation from './parkingLots/reducers/setUserLocation_reducers'
 import sortedTable from './table/reducers/table_reducers'
 import checkInternet from './checkInternet/reducers/checkInternet_reducers'
 import getParkings from './getParkings/reducers/getParkings_reducers'
+import selectedCar from './selectedCar/reducers/selectedCar_reducers'
+import getAllParkingsSpaces from './updateParkingSpaces/reducers/updateParkingSpaces_reducers'
+import sendUserSetup from './sendUserSetup/reducers/sendUserSetup_reducers'
+import errorMessage from './errorMessageBK/reducers/errorMessage_reducers'
+import timerSetup from './timerSetup/reducers/timerSetup_reducers'
 
 export default reducers = combineReducers ({
     register,
@@ -26,5 +31,10 @@ export default reducers = combineReducers ({
     setUserLocation,
     sortedTable,
     checkInternet,
-    getParkings
+    getParkings,
+    selectedCar,
+    getAllParkingsSpaces,
+    sendUserSetup,
+    errorMessage,
+    timerSetup
 })

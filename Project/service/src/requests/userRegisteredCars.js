@@ -30,6 +30,7 @@ const userRegisteredCars = async (req, res) => {
               }
             })
         }
+        con.release()
     })
 }
 

@@ -1,7 +1,7 @@
 import { userBalance_Success, userBalance_Failed } from "../../constants/constants";
 
 export const userBalance = (username) => async (dispatch) => {
-    await fetch(`http://192.168.1.5:3000/user/balance/?username=${username}`)
+    await fetch(`http://192.168.1.2:3000/user/balance/?username=${username}`)
     .then((response) => response.json()
     .then((result) => {
         if(!result.error) {

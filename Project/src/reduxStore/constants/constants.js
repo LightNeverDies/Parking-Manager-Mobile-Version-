@@ -36,3 +36,19 @@ export const parkingLots_Failed = 'parkingLots_Failed'
 
 export const getParkings_Success = 'getParkings_Success'
 export const getParkings_Failed = 'getParkings_Failed'
+
+export const getIpAddress_Success = 'getIpAddress_Success'
+export const getIpAddress_Failed = 'getIpAddress_Failed'
+
+export const getAllParkingsSpaces_Success = 'getAllParkingsSpaces_Success'
+export const getAllParkingsSpaces_Failed = 'getAllParkingsSpaces_Failed'
+
+export const userSetupLoader_True = 'userSetupLoader_True'
+export const userSetupLoader_False = 'userSetupLoader_False'
+export const userSetupLoader_Finnished = 'userSetupLoader_Finnished'
+
+export const errorMessage_Success = 'errorMessage_Success'
+export const errorMessage_Finnished = 'errorMessage_Finnished'
+
+export const timerSetup_Success = 'timerSetup_Success'
+export const timerSetup_Finnished = 'timerSetup_Finnished'

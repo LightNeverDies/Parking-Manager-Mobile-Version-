@@ -1,7 +1,7 @@
 import { userRegister_Success, userRegister_Exists } from '../../constants/constants'
 
 export const addUser = (username, password, email) => async (dispatch) => {
-    await fetch(`http://192.168.1.5:3000/user/register/?username=${username}&password=${password}&email=${email}`)
+    await fetch(`http://192.168.1.2:3000/user/register/?username=${username}&password=${password}&email=${email}`)
     .then((response) => response.json()
     .then((result) => {
         if(!result.error) {

@@ -10,6 +10,8 @@ const clientSocket = io.connect("http://localhost:8000")
 const socketio = require('socket.io')
 const server = socketio(8002)
 
+
+require('../utils/github')
 const userChecker = require('../requests/userChecker')
 const rqStatistic = require('../requests/requestStatistic')
 const loginChecker = require('../requests/loginRequest')
@@ -23,7 +25,7 @@ const parkingLots = require('../requests/parkingLots')
 const getParkings = require('../requests/getParkings')
 const raspBerryPiSpots = require('../requests/raspBerryPiSpots')
 const allParkingsLots = require('../requests/raspBerryPiSpots')
-
+const userPaymentInfo = require('../requests/userPaymentInfo')
 
 app.use(express.json())
 app.use(
@@ -33,7 +35,9 @@ app.use(
 )
 
 app.get('/', ( req, res ) => {
-  res.send(true)
+  res.send({
+    status: true
+  })
 });
 
 // Adding User
@@ -156,7 +160,9 @@ server.on('connection', (socket) => {
   console.info(`Client connected to Backend [id=${socket.id}]`)
 
   allParkingsLots.allParkingsLots(socket)
-  socket.on("parkinglotsChanged", (row, allData) => {
+  socket.on("parkingLotsChanged", async (info) => {
+    await userPaymentInfo.userPaymentInfo(info, socket)
+      // row allData
       // update specific row with data and send it back to raspberryPI
   })
 

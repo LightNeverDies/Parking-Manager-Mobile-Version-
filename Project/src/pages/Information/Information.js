@@ -81,7 +81,7 @@ class Information extends React.Component {
                     fillShadowGradientOpacity:1,
                   }}
                 />
-        </View>
+            </View>
         </ScrollView>
         )
     }

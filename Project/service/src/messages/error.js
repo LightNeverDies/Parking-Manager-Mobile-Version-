@@ -8,7 +8,8 @@ const errorMessagesBE = {
     errorUserInformation: "No Information Found",
     errorCarsLimit: 'Limit of three cars per account',
     errorCarExists: 'Already exists in your account',
-    errorNoInformation: 'No data available'
+    errorNoInformation: 'No data available',
+    errorPlaceTaken: 'Place is already taken'
 }
 
 module.exports = errorMessagesBE

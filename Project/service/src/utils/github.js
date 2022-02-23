@@ -1,4 +1,5 @@
 const { exec } = require('child_process');
+const { Console } = require('console');
 const fs = require('fs');
 const moment = require("moment")
 const path = require('path')
@@ -34,8 +35,10 @@ exec('git log --pretty=format:%ad%n%s', (error, stdout) => {
             "Added features": result
         }
 
+        console.log('Getting news from github .....')
+
         fs.writeFileSync(path.join(__dirname, '../../..', 'src/pages/Information/information.json'), JSON.stringify(json))
 
-        
+        console.log('Finnished')
     }
 })

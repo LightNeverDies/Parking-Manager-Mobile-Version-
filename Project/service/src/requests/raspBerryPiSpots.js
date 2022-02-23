@@ -34,7 +34,6 @@ const raspBerryPiSpots = async (parkings) => {
                                 })
                             })
                         }
-
                         if(result.length > 0) {
                             allParkingsAvailable = result
                         }

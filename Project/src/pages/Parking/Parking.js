@@ -1,42 +1,53 @@
 import React from 'react'
-import { StyleSheet, View, Text, Dimensions, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { List, RadioButton } from 'react-native-paper';
 import ButtonComp from '@src/components/Buttons/Buttons'
 import { FlatGrid } from 'react-native-super-grid'
 import { connect } from 'react-redux'
 import Payment from '../Payment/Payment'
-import CountDown from 'react-native-countdown-component'
 import SocketIOClient from 'socket.io-client'
+import TakeNowMethod from './TakeNowMethod'
+import { registeredCars } from '@src/reduxStore/registeredCars/actions/registeredCars'
+import { parkingSpaces } from '@src/reduxStore/updateParkingSpaces/actions/updateParkingSpaces'
+import { sendUserSetup } from '@src/reduxStore/sendUserSetup/actions/sendUserSetup';
+import { errorMessageBK } from '@src/reduxStore/errorMessageBK/actions/errorMessageBK';
+import { timerSetup } from '@src/reduxStore/timerSetup/actions/timerSetup'
 
 class Parking extends React.Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
 
     this.state = {
-      active: false,
       payActive: true,
       items: [],
       activeOption: '',
       paymentOption: true,
-      startTimer: false,
-      timer: '',
-      parkingSpaces: [],
       parkingOption: '',
       radioOptions: ['Take Now', 'Reserv Now', 'Extend Time'],
       price: 2
     }
+
   }
 
   componentDidMount = () => {
-    this.socket = SocketIOClient('http://192.168.1.5:8002')
-    this.socket.on("ParkingSpaces", (result) => {
-      this.setState({ parkingSpaces: result })
+    this.props.registeredCars(this.props.username)
+    this.socket = SocketIOClient('http://192.168.1.2:8002')
+
+    this.socket.on("ParkingSpaces", async(result) => {
+      await this.props.parkingSpaces(result)
+    })
+
+    this.socket.on("errorMessage", async(error) => {
+      await this.props.errorMessageBK(error)
+    })
+
+    this.socket.on("settingTimer", async(info) => {
+      await this.props.timerSetup(info)
     })
   }
 
   componentWillUnmount = () => {
-    this.setState({ startTimer: false })
     this.socket.disconnect()
   }
 
@@ -62,87 +73,64 @@ class Parking extends React.Component {
     this.setState({ payActive: true })
   }
 
-
-  onPayMethod = () => {
-    // if (this.state.seconds === 0) {
-    //   return (
-    //     <MaterialCommunityIcons name="timer-sand-empty"
-    //       style={{ justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}
-    //       size={50} color="white" />
-    //   )
-    // } else {
-    //   return (
-    //     <MaterialCommunityIcons name="timer-sand"
-    //       style={{ justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}
-    //       size={50} color="white" />
-    //   )
-    // }
-  }
-
-  countDownTimer = () => {
-    return (
-      <CountDown
-        size={30}
-        until={5}
-        onFinish={() => alert('Finished')}
-        onChange={(value) => this.setState({ timer: value })}
-        digitStyle={{ backgroundColor: '#FFF' }}
-        digitTxtStyle={{ color: '#1CC625' }}
-        timeLabelStyle={{ color: 'red', fontWeight: 'bold' }}
-        separatorStyle={{ color: '#1CC625' }}
-        timeToShow={['H', 'M', 'S']}
-        timeLabels={{ m: null, s: null }}
-        showSeparator
-        running={this.state.startTimer}
-      />
-    )
-  }
-
-  userPay = (id, status, price) => {
-    // 1 hours is 3600 seconds
-    // 5 min are 300 seconds
-    // needs to be sended an object with the current time and changed status to the backend to mysql  
-    // console.log("Hello", this.state.timer)
-    // if(this.state.timer == 300) {
-    //   const minutes = 300 / 60
-    //   console.log("Time left", minutes)
-    // }
-    if(this.props.balance != 0) {
-      console.log("status", status)
-      console.log('id', id)
-      const diff = this.props.balance - price
-      console.log(diff)
-    }
-  }
-
   conditionChecker = (value) => {
-    if(value != this.state.parkingOption ) {
-      this.setState({ parkingOption: value })
-      
-      switch (value) {
-        case 'Take Now':
-          break
-        case 'Extend Time':
-          // If you want to use this option Extend Time -> timer left should be 5 minutes
-        // if timer == 5 minutes
+    switch (value) {
+      case 'Take Now':
+        return (
+          <TakeNowMethod/>
+        )
+      case 'Extend Time':
+        // If you want to use this option Extend Time -> timer left should be 5 minutes
+      // if timer == 5 minutes
+      // dispatch
+      break
+      case 'Reserv Now':
         // dispatch
-          break
-        case 'Reserv Now':
-          // dispatch
-          break
-      }
-
+        break
+      default: 
+          return (
+            <></>
+          )
     }
-    
   }
 
+  userSetupPayment = async(spot, price) => {
+    const userSetup = {
+      user_price: price,
+      type: 'Sub',
+      carNumber: this.props.selected,
+      username: this.props.username,
+      placeStatus: spot.status,
+      placeId: spot.id
+    } 
+
+    await this.props.sendUserSetup(userSetup, this.socket, this.props.selected)
+  }
+
+
+  timerShow = (findSpecificOne, id) => {
+    if(findSpecificOne !== undefined) {
+      const timer = findSpecificOne?.[id.toString()]['timerSetup']
+      return (
+        <View>
+          <List.Item
+          title='Time Left'
+          titleStyle={styles.textStyle}
+          description={`${timer.hours} : ${timer.minutes} : ${timer.seconds}`}
+          descriptionStyle={styles.textTimer}
+          />
+        </View>
+      )
+    }
+  }
 
   viewSpot = (spot) => {
     const { parkingOption, price } = this.state
-    console.log('this timer', this.state.timer)
+    const findSpecificOne = this.props.timer?.find((x) => Object.keys(x).toString() === spot.id.toString())
+
     return (
       this.state.paymentOption ?
-        <View style={styles.spot}>
+        <View key={spot.id} style={styles.spot}>
           <View> 
             <List.Item
               title={`Parking Space ${spot.id}`}
@@ -153,29 +141,34 @@ class Parking extends React.Component {
                 style={{ justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}
                 size={50} color="white" />}
             />
-            {this.state.startTimer ? this.countDownTimer() : null}
           </View>
           {/* should make timer with calendar for extend time and reserv now */}
           <View style={styles.rowRadioButton}>
             {this.state.radioOptions.map((el, index) => {
-              console.log(index)
               return (
-                <RadioButton.Group key={index} onValueChange={value => this.conditionChecker(value)} value={parkingOption}>
+                <RadioButton.Group key={index} onValueChange={(value) => this.setState({ parkingOption: value})} value={parkingOption}>
                   <RadioButton.Item key={index} color='white' labelStyle={{ color: 'white' }} label={el} value={el} 
                   disabled={el == "Reserv Now" || el == "Extend Time"}/>
                 </RadioButton.Group>
               )
             })}
           </View>
-            
+          {this.props.status ? this.timerShow(findSpecificOne, spot.id) : null}
+          {this.conditionChecker(parkingOption)}
+
+          <View style={{ flex: 0.8}}>
+            {!this.props.statusLoader ? null : <ActivityIndicator size="large" color="red"></ActivityIndicator> }
+            {this.props.errorMessage ? <Text style={styles.errorMessageStyle}>{this.props.errorMessage}</Text> : null}
+            {this.props.errorPlace ? <Text style={styles.errorPlaceStyle}>{this.props.errorPlace}</Text> : null}
+          </View>
+
           <View style={styles.doubleButton}>
             <ButtonComp
-              style={{ backgroundColor: this.props.balance == 0 ? 'gray' : '#00aeef', margin: 10, borderRadius: 8, width: 150, padding: 10, alignItems: 'center', justifyContent: 'center' }}
-              disabled={this.state.parkingOption == '' } onPress={() => {
-                this.setState({ startTimer: !this.state.startTimer }),
-                this.userPay(spot.id, parkingOption, price)
+              style={{ backgroundColor: this.props.balance == 0 || this.state.parkingOption == '' ? 'gray' : '#00aeef', margin: 10, borderRadius: 8, width: 150, padding: 10, alignItems: 'center', justifyContent: 'center' }}
+              disabled={this.state.parkingOption == ''} onPress={() => {
+                this.userSetupPayment(spot, price)
               }}>Pay</ButtonComp>
-            <ButtonComp onPress={() => { this.onPayment, this.setState({ paymentOption: false }) }}>Add Funds</ButtonComp>
+            <ButtonComp onPress={() => { this.onPayment, this.setState({ paymentOption: false })}}>Add Funds</ButtonComp>
           </View>
           <View style={styles.rowButton}>
             <ButtonComp onPress={this.onBack}>Back</ButtonComp>
@@ -187,8 +180,9 @@ class Parking extends React.Component {
 
   renderPage = () => {
     const spot = this.state.items
-    if (this.state.payActive == false) {
-      return (
+    
+    if(this.state.payActive == false) {
+      return ( 
         this.viewSpot(spot)
       )
     }
@@ -200,10 +194,10 @@ class Parking extends React.Component {
         this.Legend() :
         this.renderPage()
     )
-
   }
 
   Legend = () => {
+
     return (
       <>
         <Text style={styles.textStyle}>Information</Text>
@@ -222,21 +216,23 @@ class Parking extends React.Component {
           </View>
         </View>
         <Text style={styles.textStyle}>Payment for 1 hour is 2€</Text>
+        {this.props.data ? 
         <FlatGrid
-          itemDimension={90}
-          data={this.state.parkingSpaces}
-          style={styles.gridView}
-          spacing={10}
-          renderItem={({ item }) => (
-            <TouchableOpacity key={item.id} onPress={() => { this.setState({ items: item }), this.setState({ payActive: false }), console.log(item) }}>
-              <View key={item.id} style={[styles.itemContainer, { backgroundColor: item.code }]}>
-                <Text style={styles.itemName}>{item.parkSpace}</Text>
-                <Text style={styles.itemCode}>{item.type}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-        </>
+        itemDimension={90}
+        data={this.props.data}
+        style={styles.gridView}
+        spacing={10}
+        renderItem={({ item }) => (
+          <TouchableOpacity key={item.id_lots} onPress={() => {this.setState({ items: item }), this.setState({ payActive: false }), this.setState({ parkingOption: '' })}}>
+            <View key={item.id_lots} style={[styles.itemContainer, { backgroundColor: item.code }]}>
+              <Text style={styles.itemName}>{item.id_lots}</Text>
+              <Text style={styles.itemCode}>{item.type}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        /> : this.props.error}
+      </>
+        
     )
   }
 
@@ -331,12 +327,54 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: "25%",
     marginLeft: 10
+  },
+  errorMessageStyle:{
+    textAlign: 'center',
+    fontSize: 20,
+    color: 'red',
+    marginTop: 30
+  },
+  textStyle: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 18,
+    marginTop: 10
+  },
+  textTimer: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 30,
+    marginTop: 12
+  },
+  errorPlaceStyle: {
+    textAlign: 'center',
+    fontSize: 20,
+    color: 'red',
+    marginTop: 45
   }
 });
 
 const mapStateToProps = (state) => {
   return {
+    username: state.login.username,
     balance: state.userBalance.balance,
+    selected: state.selectedCar.selected,
+    data: state.getAllParkingsSpaces.data,
+    error: state.getAllParkingsSpaces.error,
+    statusLoader: state.sendUserSetup.statusLoader,
+    errorMessage: state.sendUserSetup.errorMessage,
+    errorPlace: state.errorMessage.error,
+    timer: state.timerSetup.timer,
+    status: state.timerSetup.status
   }
 }
-export default connect(mapStateToProps, null)(Parking)
+
+const mapDispatchToProps = dispatch => ({
+  registeredCars: (username) => dispatch(registeredCars(username)),
+  parkingSpaces: (data) => dispatch(parkingSpaces(data)),
+  sendUserSetup: (userSetup, socket, selected) => dispatch(sendUserSetup(userSetup, socket, selected)),
+  errorMessageBK: (error) => dispatch(errorMessageBK(error)),
+  timerSetup: (info) => dispatch(timerSetup(info))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Parking)
