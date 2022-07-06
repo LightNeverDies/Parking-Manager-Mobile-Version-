@@ -55,7 +55,7 @@ class LoginScreen extends React.Component {
             <View style={styles.loginContainer}>
                     <View style= {styles.top}></View>
                     {/* <ConnectionChecker/> */}
-                    <LogoHolder source={require('../../../assets/favicon.png')}/>
+                    <LogoHolder source={require('../../../assets/logo.png')}/>
                 <View style= {styles.container}>
                     <TextInput style={styles.inputField} placeholderTextColor="white" placeholder={"Email"} keyboardType="email-address" onChangeText={value => this.setState({ email: value })}/>
                     <TextInput style={styles.inputField} placeholderTextColor="white" placeholder={"Password"} secureTextEntry={true} onChangeText={value => this.setState({ password: value })}/>

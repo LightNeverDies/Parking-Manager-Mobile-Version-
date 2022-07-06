@@ -28,6 +28,8 @@ const timerSetup = (state = initialState, action) => {
                 return {...state, timer: [...state.timer, action.payload], status: action.payload[keyToString].status }
             }
         case timerSetup_Finnished:
+            // should think about good solution for end timer
+            // maybe a new method for extend time
             return state
             //return { placeId: action.payload.placeId, hours: action.payload.hours, minutes: action.payload.minutes, seconds: action.payload.seconds, status: action.payload.status }
         default:

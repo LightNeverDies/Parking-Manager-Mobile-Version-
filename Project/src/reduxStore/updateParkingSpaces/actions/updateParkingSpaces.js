@@ -1,7 +1,8 @@
-import { getAllParkingsSpaces_Success, getAllParkingsSpaces_Failed } from '../../constants/constants'
+import { getAllParkingsSpaces_Success, getAllParkingsSpaces_Failed, getAllParkingsSpaces_UpdateSingle } from '../../constants/constants'
 
 export const parkingSpaces = (data) => async(dispatch) => {
-    if(data) {
+    const timeout = 3000
+    if(Array.isArray(data)) {
         dispatch({
             type: getAllParkingsSpaces_Success,
             payload: {
@@ -9,6 +10,14 @@ export const parkingSpaces = (data) => async(dispatch) => {
                 error: '',
                 loading: true
             } 
+        })
+
+    } else if(data) {
+        dispatch({
+            type: getAllParkingsSpaces_UpdateSingle,
+            payload: {
+                data: data
+            }
         })
     } else {
         dispatch({

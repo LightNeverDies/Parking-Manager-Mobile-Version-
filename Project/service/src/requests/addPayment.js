@@ -20,6 +20,7 @@ const addPayment = async(req, res) => {
                 type: req.query.type,
                 funds: req.query.funds
             }
+            console.log(user)
 
             con.query(`SELECT balance FROM User_Balance WHERE username = '${user.username}'`, (error, userBalance) => {
                 if(error) {
@@ -44,7 +45,7 @@ const addPayment = async(req, res) => {
                             }
                         })
                     }
-                    res.send({
+                    res.json({
                         username: user.username,
                         status: '0'
                     })

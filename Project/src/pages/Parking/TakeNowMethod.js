@@ -2,7 +2,9 @@ import React from 'react'
 import { StyleSheet, View, Text, Dimensions } from 'react-native'
 import { connect } from 'react-redux'
 import { Picker } from '@react-native-community/picker'
+import SocketIOClient from 'socket.io-client'
 import { selectedCar } from '@src/reduxStore/selectedCar/actions/selectedCar'
+import { parkingSpaces } from '@src/reduxStore/updateParkingSpaces/actions/updateParkingSpaces'
 
 class TakeNowMethod extends React.Component {
     constructor(props) {
@@ -14,7 +16,12 @@ class TakeNowMethod extends React.Component {
             noCarsMessage1: 'Go to Account and make registration of your cars.'
         }
     }
-    
+
+    componentDidMount = () => {
+        this.socket = SocketIOClient('http://192.168.0.103:8002')
+        this.socket.emit("ParkingLots")
+    }
+
     carSelector = () => {
         if(this.props.cars) {
             const allCars = Object.values(this.props.cars).map((item) => {return item.carNumber})
@@ -78,15 +85,15 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => {
     return {
         cars: state.registeredCars.cars,
-        selected: state.selectedCar.selected
+        selected: state.selectedCar.selected,
+        parkingsLots: state.getAllParkingsSpaces
     }
 }
 
 const mapDispatchToProps = dispatch => ({
     registeredCars: (username) => dispatch(registeredCars(username)),
-    selectedCar: (carSelected) => dispatch(selectedCar(carSelected))
+    selectedCar: (carSelected) => dispatch(selectedCar(carSelected)),
+    parkingSpaces: (data) => dispatch(parkingSpaces(data)),
 })
-
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(TakeNowMethod)

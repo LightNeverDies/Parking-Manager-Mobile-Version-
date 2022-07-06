@@ -25,12 +25,12 @@ const userCreated = async(req, res) => {
               
               if(row.length > 0) {
                 if(user.username) {
-                  res.send({
+                  res.json({
                     data: row,
                     status: '1',
                     error: messageError.errorUsername })
                 } else {
-                  res.send({
+                  res.json({
                     data: row,
                     status: '1',
                     error: messageError.errorEmail })
@@ -44,7 +44,7 @@ const userCreated = async(req, res) => {
                     res.send(messageError.errorQuery)
                     return error
                   } else {
-                    res.send({
+                    res.json({
                       username: user.username,
                       status: '0',
                     })

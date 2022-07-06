@@ -133,9 +133,9 @@ class Account extends React.Component {
                         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
                             <Text style={{ color: 'white', fontSize: 20, width: Dimensions.get('window').width, textAlign: 'right', marginRight: 10 }}>Balance {this.props.balance}€</Text>
                         </View>
-                        <View style={{ position: 'absolute', left: 0, top: 220 }}>
+                        <View style={{ position: 'absolute', left: 0, top: 218, bottom: 0 }}>
                             <TouchableOpacity onPress={this.onClickImage}>
-                                <Image source={this.state.carImage[this.state.currentImage]} />
+                                <Image fadeDuration={0} source={this.state.carImage[this.state.currentImage]} />
                             </TouchableOpacity>
                         </View>
                         <View style={styles.columnLine}>

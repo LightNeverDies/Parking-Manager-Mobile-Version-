@@ -167,7 +167,7 @@ class Main extends React.Component {
                         </ButtonHub>
                     </View>
                 </View>
-                <LogoHolder source={require('../../../assets/favicon.png')} />
+                <LogoHolder source={require('../../../assets/logo.png')} />
                 {this.renderMainContainer(this.state.active)}
 
                 <View style={styles.navbarBottom}>
@@ -258,7 +258,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'column',
         backgroundColor: '#2A303E',
-        marginTop: 30
+        marginTop: 30,
+        bottom: 0,
+        top: 0
     },
     navbarBottom: {
         width: Dimensions.get('window').width,

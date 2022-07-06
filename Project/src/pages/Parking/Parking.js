@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ActivityIndicator } from 'react-native'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { MaterialCommunityIcons, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { List, RadioButton } from 'react-native-paper';
 import ButtonComp from '@src/components/Buttons/Buttons'
 import { FlatGrid } from 'react-native-super-grid'
@@ -30,11 +30,20 @@ class Parking extends React.Component {
 
   }
 
-  componentDidMount = () => {
+  componentDidMount = async() => {
+
     this.props.registeredCars(this.props.username)
-    this.socket = SocketIOClient('http://192.168.1.2:8002')
+    this.socket = SocketIOClient('http://192.168.0.103:8002')
 
     this.socket.on("ParkingSpaces", async(result) => {
+      await this.props.parkingSpaces(result)
+    })
+
+    this.socket.on("changedPlace", async(result) => {
+      await this.props.parkingSpaces(result)
+    })
+
+    this.socket.on("lotsChecker", async(result) => {
       await this.props.parkingSpaces(result)
     })
 
@@ -45,6 +54,7 @@ class Parking extends React.Component {
     this.socket.on("settingTimer", async(info) => {
       await this.props.timerSetup(info)
     })
+
   }
 
   componentWillUnmount = () => {
@@ -64,21 +74,19 @@ class Parking extends React.Component {
     )
   }
 
-
   onPaymentOption = () => {
     this.setState({ paymentOption: true })
   }
 
   onBack = () => {
+    this.socket.emit("ParkingLots")
     this.setState({ payActive: true })
   }
 
   conditionChecker = (value) => {
     switch (value) {
       case 'Take Now':
-        return (
-          <TakeNowMethod/>
-        )
+        return <TakeNowMethod/>
       case 'Extend Time':
         // If you want to use this option Extend Time -> timer left should be 5 minutes
       // if timer == 5 minutes
@@ -95,13 +103,21 @@ class Parking extends React.Component {
   }
 
   userSetupPayment = async(spot, price) => {
+    let option = this.state.parkingOption
+    let status, code = ''
+    
+    if(option === "Take Now" || option === "Extend Time") status = "Taken", code = "#bc0000"
+    if(option === "Reserv Now") status = "Reserved", code = "#ffcb00"
+
     const userSetup = {
       user_price: price,
       type: 'Sub',
       carNumber: this.props.selected,
       username: this.props.username,
       placeStatus: spot.status,
-      placeId: spot.id
+      placeId: spot.id,
+      status: status,
+      code: code
     } 
 
     await this.props.sendUserSetup(userSetup, this.socket, this.props.selected)
@@ -124,9 +140,35 @@ class Parking extends React.Component {
     }
   }
 
+  checkedOption = (el, status, findSpecificOne, id) => {
+    const specificTimer = findSpecificOne?.[id.toString()]['timerSetup']
+    let time = ''
+    if(specificTimer) {
+      time = `${specificTimer.hours}:${specificTimer.minutes}:${specificTimer.seconds}`
+    } 
+    switch(status) {
+      
+      case "Taken":
+        if(time < "00:05:00") {
+          return el === "Reserv Now" || el === 'Take Now'
+        } else {
+          return el === "Extend Time" || el === "Reserv Now" || el === 'Take Now'
+        }
+      case "Free":
+        return el === "Extend Time"
+      case "Reserved":
+        return el === "Extend Time" || el === "Take Now"
+      default:
+        return
+    }
+  }
+
   viewSpot = (spot) => {
+    // timer should remains after cleaning the expo app -> status is not changing at all -> 
+    //tomorrow should think about how to procced with the timer
     const { parkingOption, price } = this.state
     const findSpecificOne = this.props.timer?.find((x) => Object.keys(x).toString() === spot.id.toString())
+    const findSpecificStatus = this.props.data?.find((x) => x.id === spot.id).status
 
     return (
       this.state.paymentOption ?
@@ -135,7 +177,7 @@ class Parking extends React.Component {
             <List.Item
               title={`Parking Space ${spot.id}`}
               titleStyle={{ color: 'white', fontSize: 18 }}
-              description={`Current status of the spot is ${spot.status}`}
+              description={`Current status of the spot is ${findSpecificStatus}`}
               descriptionStyle={{ color: 'white', fontSize: 18 }}
               left={() => <MaterialCommunityIcons name="parking"
                 style={{ justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}
@@ -148,13 +190,13 @@ class Parking extends React.Component {
               return (
                 <RadioButton.Group key={index} onValueChange={(value) => this.setState({ parkingOption: value})} value={parkingOption}>
                   <RadioButton.Item key={index} color='white' labelStyle={{ color: 'white' }} label={el} value={el} 
-                  disabled={el == "Reserv Now" || el == "Extend Time"}/>
+                  disabled={this.checkedOption(el, findSpecificStatus, findSpecificOne, spot.id)}/>
                 </RadioButton.Group>
               )
             })}
           </View>
           {this.props.status ? this.timerShow(findSpecificOne, spot.id) : null}
-          {this.conditionChecker(parkingOption)}
+          {this.state.parkingOption !== '' ? this.conditionChecker(parkingOption) : null}
 
           <View style={{ flex: 0.8}}>
             {!this.props.statusLoader ? null : <ActivityIndicator size="large" color="red"></ActivityIndicator> }
@@ -167,6 +209,7 @@ class Parking extends React.Component {
               style={{ backgroundColor: this.props.balance == 0 || this.state.parkingOption == '' ? 'gray' : '#00aeef', margin: 10, borderRadius: 8, width: 150, padding: 10, alignItems: 'center', justifyContent: 'center' }}
               disabled={this.state.parkingOption == ''} onPress={() => {
                 this.userSetupPayment(spot, price)
+                this.setState({ parkingOption: '' })
               }}>Pay</ButtonComp>
             <ButtonComp onPress={() => { this.onPayment, this.setState({ paymentOption: false })}}>Add Funds</ButtonComp>
           </View>
@@ -197,7 +240,6 @@ class Parking extends React.Component {
   }
 
   Legend = () => {
-
     return (
       <>
         <Text style={styles.textStyle}>Information</Text>
@@ -226,6 +268,10 @@ class Parking extends React.Component {
           <TouchableOpacity key={item.id_lots} onPress={() => {this.setState({ items: item }), this.setState({ payActive: false }), this.setState({ parkingOption: '' })}}>
             <View key={item.id_lots} style={[styles.itemContainer, { backgroundColor: item.code }]}>
               <Text style={styles.itemName}>{item.id_lots}</Text>
+              <MaterialCommunityIcons name="parking"
+                                color={'white'}
+                                size={32}
+                                style={{ marginBottom: 5 }} />
               <Text style={styles.itemCode}>{item.type}</Text>
             </View>
           </TouchableOpacity>
@@ -269,14 +315,18 @@ const styles = StyleSheet.create({
     margin: 10
   },
   itemName: {
-    fontSize: 16,
+    fontSize: 22,
     color: '#fff',
     fontWeight: '600',
+    flex: 2,
+    alignItems: 'flex-end',
+    alignSelf: 'flex-end',
   },
   itemCode: {
     fontWeight: '600',
     fontSize: 12,
     color: '#fff',
+    flex: 2,
   },
   mainContainer: {
     flex: 2.2,

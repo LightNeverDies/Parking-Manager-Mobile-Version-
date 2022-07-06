@@ -1,21 +1,10 @@
+// this is only for Take Now method and Maybe will contain the Extend Time method
 const mysql = require('../mysql/mysqlConnector')
 const moment = require("moment")
 const messageError = require('../messages/error')
 
 const userPaymentInfo = async(info, socket) => {
-    // await placeChecker(socket, info)
-    const placeTaken = "Taken"
-
-    const infoSetup = {
-        placeId: info.placeId,
-        status: true,
-        duration: 3600000
-
-    }
-    await timerSetup(socket, infoSetup)
-    await setChangePlace(socket, placeTaken, info.placeId)
-
-    await errorMessageSender(socket, 'Place is already taken')
+    await placeChecker(socket, info)
 }
 
 const errorMessageSender = (socket, error) => {
@@ -40,7 +29,12 @@ const userBalance = async(funds, type, username, socket) => {
                     errorMessageSender(socket, messageError.errorQuery)
                     console.log(error)
                 } else {
-                    const residue = balance[0].balance - user.funds
+                    let residue = 0
+                    if(balance[0].balance > 0) {
+                        residue = balance[0].balance - user.funds
+                    } else {
+                        residue = 0
+                    }
 
                     con.query(`UPDATE User_Balance SET balance= ${residue} WHERE username = '${user.username}'`, (error) => {
                         if(error) {
@@ -77,7 +71,7 @@ const placeChecker = async(socket, info) => {
                 console.log(error)
             } else {
                 if(placeInfo[0].status === info.placeStatus) {
-                    await takePlace(info.carNumber, info.placeId, info.username, socket)
+                    await takePlace(info.carNumber, info, socket)
                     await userBalance(info.user_price, info.type, info.username, socket)
                 } else {
                     errorMessageSender(socket, messageError.errorPlaceTaken)
@@ -88,7 +82,7 @@ const placeChecker = async(socket, info) => {
     })
 }
 
-const takePlace = async(carNumber, placeId, username, socket) => {
+const takePlace = async(carNumber, info, socket) => {
     await mysql.connection.getConnection((err, con) => {
         if(err) {
             errorMessageSender(socket, messageError.errorConnection)
@@ -96,22 +90,20 @@ const takePlace = async(carNumber, placeId, username, socket) => {
         } else {
             const timeNow = moment()
             const timeExpired = moment().add(1, 'hours')
-            const placeStatus = "Taken"
-            const code = "#bc0000"
-            con.query(`UPDATE Parking_Spaces SET username = '${username}', time_entered = '${timeNow}', time_expired = '${timeExpired}', car_number = '${carNumber}', 
-            status = '${placeStatus}', code = '${code}'
-            WHERE id_lots = '${placeId}'`, (error) => {
+            con.query(`UPDATE Parking_Spaces SET username = '${info.username}', time_entered = '${timeNow}', time_expired = '${timeExpired}', car_number = '${carNumber}', 
+            status = '${info.status}', code = '${info.code}'
+            WHERE id_lots = '${info.placeId}'`, (error) => {
                 if(error) {
                     console.log(error)
                     errorMessageSender(socket, messageError.errorQuery)
                 } else {
-                    con.query(`SELECT status FROM Parking_Spaces WHERE username = '${username}' AND id_lots = '${placeId}'`, (error, statusOfPlace) => {
+                    con.query(`SELECT status, time_expired FROM Parking_Spaces WHERE username = '${info.username}' AND id_lots = '${info.placeId}'`, async(error, statusOfPlace) => {
                         if(error) {
                             console.log(error)
                             errorMessageSender(socket, messageError.errorQuery)
                         } else {
-                            //timerSetup(socket, placeId, timeNow, timeExpired)
-                            //changePlace(socket, statusOfPlace[0].status, placeId)
+                           await timerSetup(socket,info.placeId, statusOfPlace[0].time_expired)
+                           await setChangePlace(socket, statusOfPlace[0].status, info.placeId)
                         }
                     })
                 }
@@ -120,11 +112,41 @@ const takePlace = async(carNumber, placeId, username, socket) => {
     })
 }
 
-const timerSetup = (socket, infoSetup) => {
+// const timerChecker = (timeEnded) => {
+    //const entered = new Date().toLocaleTimeString('it-IT')
+    //const ended = new Date("Wed Jun 29 2022 21:06:13 GMT+0300").toLocaleTimeString('it-IT')
+//     const entered = new Date().toLocaleTimeString('it-IT')
+//     const ended = new Date(timeEnded).toLocaleTimeString('it-IT')
+
+//     const startDate = new Date()
+//     const endDate = new Date()
+
+//     startDate.setHours(startHours)
+//     startDate.setMinutes(startMinutes)
+//     startDate.setSeconds(startSeconds)
+
+//     endDate.setHours(endHours)
+//     endDate.setMinutes(endMinutes)
+//     endDate.setSeconds(endSeconds)
+
+//     const differenceInMilliseconds = endDate - startDate
+
+//     return differenceInMilliseconds 
+// }
+
+
+const timerSetup = async(socket, placeId, timeEnded) => {
+
+    const infoSetup = {
+        placeId: placeId,
+        status: true,
+        duration: 3600000
+    }
+
     socket.emit('settingTimer', infoSetup)
 }
 
-const setChangePlace = (socket, status, placeId) => {
+const setChangePlace = async(socket, status, placeId) => {
 
     const changedPlace = {
         status,

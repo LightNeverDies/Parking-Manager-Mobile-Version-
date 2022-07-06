@@ -23,7 +23,6 @@ const persistConfig = {
 }
 
 const persistedReducer = persistReducer(persistConfig, combineReducer);
-// if I need logger for all redux store 
 const middlewareList = [thunk, logger]
 const store = createStore(persistedReducer, applyMiddleware(thunk))
 let persistor = persistStore(store);

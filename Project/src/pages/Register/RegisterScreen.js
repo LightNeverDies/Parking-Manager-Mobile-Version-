@@ -65,7 +65,7 @@ class RegisterScreen extends React.Component {
         if(username.length != '' && username.length > 2) {
             if(forbiddenWords.reservedwords.includes(username.toLowerCase())) {
                 this.state.errorStatusUsername = false
-                this.setState({ errorMessageUsername: 'Error: This username is forbidden' })
+                this.setState({ errorMessageUsername: 'Error: This username is forbidden!' })
             } else {
                 this.setState({ username: username })
                 this.state.errorStatusUsername = true
@@ -112,7 +112,7 @@ class RegisterScreen extends React.Component {
         return (
         <View style={ styles.loginContainer }>
                 <View style= {styles.top}></View>
-                <LogoHolder style={ styles.imageContainer } source={ require('../../../assets/favicon.png') }/>
+                <LogoHolder style={ styles.imageContainer } source={require('../../../assets/logo.png') }/>
             <View style= { styles.container }>
                 <View style = { styles.inputForm }>
                     <TextInput style={ styles.inputField } placeholderTextColor="white" placeholder={"Username"} onChangeText={(username) => this.usernameValidation(username)}/>
@@ -134,7 +134,7 @@ class RegisterScreen extends React.Component {
         return (
             <View style={styles.loginContainer}>
                     <View style= {styles.top}></View>
-                    <LogoHolder source={require('../../../assets/favicon.png')}/>
+                    <LogoHolder source={require('../../../assets/logo.png')}/>
                 <View style= {styles.container}>
                     <View style = {styles.inputForm}>
                         <TextInput style={styles.inputField} placeholderTextColor="white" placeholder={"Email"} keyboardType="email-address" onChangeText={(email) => this.emailValidation(email)}/>

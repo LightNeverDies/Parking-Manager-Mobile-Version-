@@ -17,13 +17,13 @@ const userRegisteredCars = async (req, res) => {
               }
 
               if(result.length > 0) {
-                  res.send({
+                  res.json({
                       status: '0',
                       cars: result,
                       items: result.length
                   })
               } else {
-                  res.send({
+                  res.json({
                     status: '1',
                     error: messageError.errorNoInformation
                   })

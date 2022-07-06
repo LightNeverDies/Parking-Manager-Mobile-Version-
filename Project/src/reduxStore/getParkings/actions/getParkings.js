@@ -1,7 +1,7 @@
 import { getParkings_Success, getParkings_Failed } from '../../constants/constants'
 
 export const getParkings = (lat, lon) => async (dispatch) => {
-    await fetch(`http://192.168.1.2:3000/getParkings/?lat=${lat}&lon=${lon}`)
+    await fetch(`http://192.168.0.103:3000/getParkings/?lat=${lat}&lon=${lon}`)
         .then((response) => response.json()
             .then((result) => {
                 if (!result.error) {

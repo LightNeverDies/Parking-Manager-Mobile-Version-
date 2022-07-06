@@ -41,6 +41,7 @@ export const getIpAddress_Success = 'getIpAddress_Success'
 export const getIpAddress_Failed = 'getIpAddress_Failed'
 
 export const getAllParkingsSpaces_Success = 'getAllParkingsSpaces_Success'
+export const getAllParkingsSpaces_UpdateSingle = 'getAllParkingsSpaces_UpdateSingle'
 export const getAllParkingsSpaces_Failed = 'getAllParkingsSpaces_Failed'
 
 export const userSetupLoader_True = 'userSetupLoader_True'

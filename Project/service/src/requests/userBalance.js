@@ -8,17 +8,27 @@ const userBalance = async(req,res) => {
                 message: messageError.errorConnection
             })
         } else {
+
             let username = req.query.username
             con.query(`SELECT * FROM User_Balance WHERE username = '${username}'`, (error, row) => {
                 if(error) {
                     res.send(messageError.errorConnection)
                     console.log(error)
-                } 
-                res.send({
-                    username: row[0].username,
-                    balance: row[0].balance,
-                    status: '0'
-                })
+                }
+                if(row.length > 0) {
+                    res.send({
+                        username: row[0].username,
+                        balance: row[0].balance,
+                        status: '0'
+                    })
+                } else {
+                    res.send({
+                        username: username,
+                        balance: '0',
+                        status: '0'
+                    })
+                }
+
             })
         }
     })

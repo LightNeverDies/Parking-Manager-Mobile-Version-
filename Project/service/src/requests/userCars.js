@@ -4,7 +4,7 @@ const messageError = require('../messages/error')
 const userCars = async(req, res) => {
     await mysql.connection.getConnection((err, con) => {
         if(err) {
-            res.send({
+            res.json({
                 message: messageError.errorConnection
             })
         } else {
@@ -16,13 +16,13 @@ const userCars = async(req, res) => {
             }
             con.query(`SELECT carNumber FROM User_Cars WHERE username='${user.username}'`, (error, result) => {
                 if(error) {
-                    res.send(messageError.errorConnection)
+                    res.json(messageError.errorConnection)
                     console.log(error)
                     return error
                 }
 
                 if(result.length >= 3) {
-                    res.send({
+                    res.json({
                         status: '1',
                         error: messageError.errorCarsLimit
                     })
@@ -34,7 +34,7 @@ const userCars = async(req, res) => {
                             return error
                         } 
                         if(result.length > 0) {
-                            res.send({
+                            res.json({
                                 status: '1',
                                 error: messageError.errorCarExists
                             })
@@ -44,7 +44,7 @@ const userCars = async(req, res) => {
                                     res.send(messageError.errorQuery)
                                     console.log(error)
                                 } else {
-                                    res.send({
+                                    res.json({
                                         status: '0'
                                     })
                                 }

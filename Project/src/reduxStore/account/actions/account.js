@@ -1,7 +1,7 @@
 import { setCurrentUser_Auth } from '../../constants/constants'
 
 export const getUserProfile = (username) => async(dispatch) => {
-    await fetch(`http://192.168.1.2:3000/user/?username=${username}`)
+    await fetch(`http://192.168.0.103:3000/user/?username=${username}`)
     .then((response) => response.json()
     .then((result) => {
         dispatch({
